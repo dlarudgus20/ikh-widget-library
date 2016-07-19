@@ -22,20 +22,20 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef THREAD_HPP
-#define THREAD_HPP
-
-#include "defines.hpp"
+#include "pch.h"
+#include "iwl/form.hpp"
 
 BEGIN_IWL()
 
-class thread
+int loop()
 {
-
-};
-
-int loop();
+    MSG msg;
+    while (::GetMessage(&msg, nullptr, 0, 0))
+    {
+        ::TranslateMessage(&msg);
+        ::DispatchMessage(&msg);
+    }
+    return (int)msg.wParam;
+}
 
 END_IWL()
-
-#endif // THREAD_HPP

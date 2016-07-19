@@ -1,4 +1,4 @@
-// Copyright (c) 2014, ÀÓ°æÇö
+// Copyright (c) 2014, Im Kyeong-Hyeon
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,6 @@
 
 #ifndef DEFINES_HPP_
 #define DEFINES_HPP_
-
-#define GLEW_STATIC
-#include <gl/glew.h>
-#include <windows.h>
 
 #include <iostream>
 #include <iomanip>

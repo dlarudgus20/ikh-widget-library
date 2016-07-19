@@ -24,6 +24,9 @@
     <ClCompile Include="form.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="thread.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -38,5 +41,8 @@
     <ClInclude Include="iwl\defines.hpp">
       <Filter>iwl</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

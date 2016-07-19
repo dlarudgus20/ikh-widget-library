@@ -1,4 +1,4 @@
-// Copyright (c) 2014, ÀÓ°æÇö
+// Copyright (c) 2014, Im Kyeong-Hyeon
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,9 +29,32 @@
 
 BEGIN_IWL()
 
+namespace detail
+{
+	struct native_window_handle_impl { };
+}
+using native_window_handle = detail::native_window_handle_impl*;
+
+class form_creation_error : public std::runtime_error
+{
+public:
+	explicit form_creation_error(const std::string& msg)
+		: std::runtime_error { msg } { }
+};
+
+struct form_style
+{
+};
+
 class form
 {
+private:
+	native_window_handle m_wnd;
 
+public:
+	explicit form(const form_style& style = { });
+
+	void show();
 };
 
 END_IWL()
