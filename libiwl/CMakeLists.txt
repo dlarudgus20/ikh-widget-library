@@ -31,8 +31,11 @@ conan_basic_setup()
 add_definitions(-DUNICODE)
 
 add_library(libiwl
-    form.cpp
-    thread.cpp
-    pch.cpp)
+    source/pch.cpp
+    source/iwl/form.cpp
+    source/iwl/thread.cpp
+    source/iwl/drawing/drawing.cpp
+    source/iwl/drawing/draw_init.cpp
+)
 
 target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -31,6 +31,7 @@ conan_basic_setup()
 add_definitions(-DUNICODE)
 
 add_executable(demo
-    demo.cpp)
+    demo.cpp
+)
 
 target_link_libraries(demo LINK_PUBLIC libiwl)
