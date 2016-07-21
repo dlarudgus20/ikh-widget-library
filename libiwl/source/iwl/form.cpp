@@ -48,7 +48,7 @@ namespace
         wc.hInstance = ::GetModuleHandle(nullptr);
         wc.lpfnWndProc = WndProc;
         wc.lpszMenuName = nullptr;
-        wc.style = CS_VREDRAW | CS_HREDRAW;
+        wc.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
         wc.lpszClassName = strcls.c_str();
 
         if (::RegisterClassEx(&wc) == 0)
@@ -91,6 +91,8 @@ form::form(const form_style& style /* = { } */)
         this);
     if (m_wnd == nullptr)
         throw form_creation_error("failed in creating window");
+
+    m_draw_init.initialize(*this);
 }
 
 void form::show()

@@ -22,41 +22,40 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FORM_HPP_
-#define FORM_HPP_
+#ifndef PCH_H_
+#define PCH_H_
 
-#include "defines.hpp"
+#define GLEW_STATIC
+#include <gl/glew.h>
+#include <gl/wglew.h>
+#include <windows.h>
 
-BEGIN_IWL()
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <array>
+#include <map>
+#include <memory>
+#include <exception>
+#include <stdexcept>
+#include <limits>
+#include <type_traits>
+#include <utility>
 
-namespace detail
-{
-	struct native_window_handle_impl { };
-}
-using native_window_handle = detail::native_window_handle_impl*;
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cmath>
+#include <cassert>
 
-class form_creation_error : public std::runtime_error
-{
-public:
-	explicit form_creation_error(const std::string& msg)
-		: std::runtime_error { msg } { }
-};
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-struct form_style
-{
-};
+#include <boost/noncopyable.hpp>
 
-class form
-{
-private:
-	native_window_handle m_wnd;
-
-public:
-	explicit form(const form_style& style = { });
-
-	void show();
-};
-
-END_IWL()
-
-#endif // FORM_HPP_
+#endif // PCH_H_

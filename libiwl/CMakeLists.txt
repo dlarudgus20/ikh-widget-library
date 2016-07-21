@@ -35,4 +35,4 @@ add_library(libiwl
     thread.cpp
     pch.cpp)
 
-target_include_directories(libiwl INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

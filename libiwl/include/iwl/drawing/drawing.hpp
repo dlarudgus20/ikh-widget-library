@@ -22,20 +22,26 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef THREAD_HPP
-#define THREAD_HPP
+#ifndef IWL_DRAWING_DRAWING_HPP_
+#define IWL_DRAWING_DRAWING_HPP_
 
-#include "defines.hpp"
+#include "../defines.hpp"
+#include "../form.hpp"
+#include "../event.hpp"
 
 BEGIN_IWL()
 
-class thread
+class drawing : private boost::noncopyable
 {
+private:
+    form m_frm;
 
-};
+public:
+    explicit drawing(form& frm);
 
-int loop();
+    event<drawing, void()> on_draw;
+}
 
 END_IWL()
 
-#endif // THREAD_HPP
+#endif // IWL_DRAWING_DRAWING_HPP_

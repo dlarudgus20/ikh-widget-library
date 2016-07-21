@@ -22,37 +22,15 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef PCH_H_
-#define PCH_H_
+#include "pch.h"
+#include "iwl/drawing/drawing.hpp"
 
-#define GLEW_STATIC
-#include <gl/glew.h>
-#include <windows.h>
+BEGIN_IWL()
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-#include <string>
-#include <array>
-#include <map>
-#include <memory>
-#include <exception>
-#include <stdexcept>
-#include <limits>
-#include <type_traits>
-#include <utility>
+drawing::drawing(form& frm)
+    : m_frm(frm)
+{
+    ;
+}
 
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cmath>
-#include <cassert>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#endif // PCH_H_
+END_IWL()

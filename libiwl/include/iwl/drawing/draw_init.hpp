@@ -22,36 +22,36 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DEFINES_HPP_
-#define DEFINES_HPP_
+#ifndef IWL_DRAWING_DRAW_INIT_HPP_
+#define IWL_DRAWING_DRAW_INIT_HPP_
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-#include <string>
-#include <array>
-#include <map>
-#include <memory>
-#include <exception>
-#include <stdexcept>
-#include <limits>
-#include <type_traits>
-#include <utility>
+#include "../defines.hpp"
+#include "../form.hpp"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cmath>
-#include <cassert>
+BEGIN_IWL()
 
-// iwl namespace macro
-#define BEGIN_IWL() \
-	namespace iwl {
+namespace detail
+{
+	struct native_drawing_handle_impl { };
+}
+using native_drawing_handle = detail::native_drawing_handle_impl*;
 
-#define END_IWL() \
-	}
+class draw_init_error : public std::runtime_error
+{
+public:
+	explicit draw_init_error(const std::string& msg)
+		: std::runtime_error { msg } { }
+};
 
-#endif // DEFINES_HPP_
+class draw_init : private boost::noncopyable
+{
+	friend form;
+private:
+	native_drawing_handle m_handle = nullptr;
+
+    void intialize(form& frm);
+}
+
+END_IWL()
+
+#endif // IWL_DRAWING_DRAW_INIT_HPP_
