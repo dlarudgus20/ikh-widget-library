@@ -23,7 +23,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "pch.h"
-#include "iwl/drawing/draw_init.hpp"
+#include "iwl/drawing/draw_context.hpp"
+#include "iwl/form.hpp"
 
 namespace
 {
@@ -32,7 +33,7 @@ namespace
 
 BEGIN_IWL()
 
-void draw_init::intialize(form& frm)
+void draw_context::initialize(form& frm)
 {
     HWND hWnd = (HWND)frm.native_handle();
     HDC hdc = ::GetDC(hWnd);
@@ -49,10 +50,10 @@ void draw_init::intialize(form& frm)
 
     int iPixelFormat = ::ChoosePixelFormat(hdc, &pfd);
     if (iPixelFormat == 0)
-        throw drawing_creation_error("opengl is not supported");
+        throw draw_context_creation_error("opengl is not supported");
 
     if (!::SetPixelFormat(hdc, iPixelFormat, &pfd))
-        throw drawing_creation_error("opengl is not supported");
+        throw draw_context_creation_error("opengl is not supported");
 
     HGLRC hFakeRC = ::wglCreateContext(hdc);
     ::wglMakeCurrent(hdc, hFakeRC);
@@ -60,7 +61,7 @@ void draw_init::intialize(form& frm)
     if (!s_bGlewInited)
     {
         if (::glewInit() != GLEW_OK)
-            throw drawing_creation_error("cannot initialize glew");
+            throw draw_context_creation_error("cannot initialize glew");
         s_bGlewInited = true;
     }
 
@@ -68,13 +69,13 @@ void draw_init::intialize(form& frm)
     ::wglDeleteContext(hFakeRC);
 
     if (!WGLEW_ARB_create_context || !WGLEW_ARB_pixel_format)
-        throw drawing_creation_error("opengl 3.3 is not supported");
+        throw draw_context_creation_error("opengl 3.3 is not supported");
 
     const int pixel_attribs[] = {
         WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
         WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
         WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-        WGL_PIXEL_TYPE, WGL_TYPE_RGBA_ARB,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
         WGL_COLOR_BITS_ARB, 32,
         WGL_DEPTH_BITS_ARB, 24,
         WGL_STENCIL_BITS_ARB, 8,
@@ -91,11 +92,11 @@ void draw_init::intialize(form& frm)
     ::wglChoosePixelFormatARB(hdc, pixel_attribs, nullptr, 1, &iPixelFormat, &iNumFormats);
 
     if (!::SetPixelFormat(hdc, iPixelFormat, &pfd))
-        throw drawing_creation_error("opengl 3.3 is not supported");
+        throw draw_context_creation_error("opengl 3.3 is not supported");
 
-    m_handle = (native_drawing_handle)::wglCreateContextAttribsARB(hdc, 0, context_attribs);
-    if (m_handle == nullptr)
-        throw drawing_creation_error("opengl 3.3 is not supported");
+    m_context = (native_drawing_context)::wglCreateContextAttribsARB(hdc, 0, context_attribs);
+    if (m_context == nullptr)
+        throw draw_context_creation_error("opengl 3.3 is not supported");
 }
 
 END_IWL()

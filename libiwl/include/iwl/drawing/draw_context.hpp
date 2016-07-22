@@ -22,36 +22,35 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_DRAWING_DRAW_INIT_HPP_
-#define IWL_DRAWING_DRAW_INIT_HPP_
+#ifndef IWL_DRAWING_DRAW_CONTEXT_HPP_
+#define IWL_DRAWING_DRAW_CONTEXT_HPP_
 
 #include "../defines.hpp"
-#include "../form.hpp"
 
 BEGIN_IWL()
 
+class form;
+
 namespace detail
 {
-	struct native_drawing_handle_impl { };
+	struct native_drawing_context_impl { };
 }
-using native_drawing_handle = detail::native_drawing_handle_impl*;
+using native_drawing_context = detail::native_drawing_context_impl*;
 
-class draw_init_error : public std::runtime_error
+class draw_context_creation_error : public std::runtime_error
 {
 public:
-	explicit draw_init_error(const std::string& msg)
+	explicit draw_context_creation_error(const std::string& msg)
 		: std::runtime_error { msg } { }
 };
 
-class draw_init : private boost::noncopyable
+class draw_context : private boost::noncopyable
 {
-	friend form;
-private:
-	native_drawing_handle m_handle = nullptr;
-
-    void intialize(form& frm);
-}
+	native_drawing_context m_context = nullptr;
+public:
+    void initialize(form& frm);
+};
 
 END_IWL()
 
-#endif // IWL_DRAWING_DRAW_INIT_HPP_
+#endif // IWL_DRAWING_DRAW_CONTEXT_HPP_

@@ -33,5 +33,6 @@ add_definitions(-DUNICODE)
 add_executable(demo
     demo.cpp
 )
-
-target_link_libraries(demo LINK_PUBLIC libiwl)
+MESSAGE("cm lib path = ${CMAKE_LIBRARY_PATH}")
+MESSAGE("cm sh lnk flg= ${CMAKE_SHARED_LINKER_FLAGS}")
+target_link_libraries(demo LINK_PUBLIC libiwl ${CONAN_LIBS})

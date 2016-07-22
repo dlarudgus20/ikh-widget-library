@@ -25,26 +25,16 @@
 #ifndef IWL_DEFINES_HPP_
 #define IWL_DEFINES_HPP_
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
 #include <algorithm>
-#include <iterator>
+#include <vector>
 #include <string>
 #include <array>
-#include <map>
 #include <memory>
-#include <exception>
 #include <stdexcept>
-#include <limits>
-#include <type_traits>
 #include <utility>
+#include <type_traits>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cmath>
+#include <cstring>
 #include <cassert>
 
 #include <boost/noncopyable.hpp>

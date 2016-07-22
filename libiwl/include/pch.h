@@ -25,37 +25,27 @@
 #ifndef PCH_H_
 #define PCH_H_
 
-#define GLEW_STATIC
+//#define GLEW_STATIC
 #include <gl/glew.h>
 #include <gl/wglew.h>
 #include <windows.h>
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
 #include <algorithm>
-#include <iterator>
+#include <vector>
 #include <string>
 #include <array>
-#include <map>
 #include <memory>
-#include <exception>
 #include <stdexcept>
-#include <limits>
-#include <type_traits>
 #include <utility>
+#include <type_traits>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cmath>
+#include <cstring>
 #include <cassert>
+
+#include <boost/noncopyable.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include <boost/noncopyable.hpp>
 
 #endif // PCH_H_

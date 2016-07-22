@@ -92,7 +92,7 @@ form::form(const form_style& style /* = { } */)
     if (m_wnd == nullptr)
         throw form_creation_error("failed in creating window");
 
-    m_draw_init.initialize(*this);
+    m_draw_context.initialize(*this);
 }
 
 void form::show()

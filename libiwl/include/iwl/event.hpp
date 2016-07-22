@@ -83,8 +83,8 @@ public:
     }
 
     template <typename F, typename = std::enable_if<
-        std::is_convertible<std::remove_reference<F>::type, fn_obj_type>
-        >::type>
+        std::is_convertible<std::remove_reference_t<F>, fn_obj_type>::value
+        >>
     event& operator +=(F&& fn)
     {
         _m_lst_fn_fixed.emplace_back(
@@ -162,7 +162,7 @@ public:
 
 template <typename Owner, typename ...Args>
 event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator +=(
-    event_slot<typename event<Owner, void(Args...)>::event>& fn)
+    event_slot<typename event<Owner, void(Args...)>::fn_type>& fn)
 {
     _m_lst_fn_removable.emplace_back(fn.get_ptr());
     return *this;
@@ -170,7 +170,7 @@ event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator +=(
 
 template <typename Owner, typename ...Args>
 event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator -=(
-    event_slot<typename event<Owner, void(Args...)>::event>& fn)
+    event_slot<typename event<Owner, void(Args...)>::fn_type>& fn)
 {
     bool succeeded = false;
     auto it = std::remove_if(_m_lst_fn_removable.begin(), _m_lst_fn_removable.end(),

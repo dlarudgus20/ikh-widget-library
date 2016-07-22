@@ -38,6 +38,14 @@ class Project(ConanFile):
         'glew/1.13.0@coding3d/ci', \
         'glm/0.9.7.6@dlarudgus20/stable'
     generators = 'cmake'
+    # default_options = \
+    #     "glew:shared = False"
+
+    def imports(self):
+        if self.settings.os == 'Windows':
+            self.copy('*.dll', dst='bin', src='bin')
+        elif self.settings.os == 'Macos':
+            self.copy('*.dylib', dst='bin', src='lib')
 
     def source(self):
         self.run('git clone ' + Project.url)
@@ -48,7 +56,7 @@ class Project(ConanFile):
         self.run('cmake --build . %s' % cmake.build_config)
 
     def package(self):
-        self.copy('*.hpp', dst='include', src='libiwl')
+        self.copy('*.hpp', dst='include/iwl', src='libiwl/include/iwl')
         if self.settings.os == 'Windows':
             if self.options.shared:
                 self.copy('*.dll', dst='bin', keep_path=False)

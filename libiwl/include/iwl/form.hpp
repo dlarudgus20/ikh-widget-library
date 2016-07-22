@@ -26,7 +26,7 @@
 #define IWL_FORM_HPP_
 
 #include "defines.hpp"
-#include "drawing/draw_init.hpp"
+#include "drawing/draw_context.hpp"
 
 BEGIN_IWL()
 
@@ -52,7 +52,7 @@ class form : private boost::noncopyable
 private:
 	native_window_handle m_wnd;
 
-	draw_init m_draw_init;
+	draw_context m_draw_context;
 
 public:
 	explicit form(const form_style& style = { });
