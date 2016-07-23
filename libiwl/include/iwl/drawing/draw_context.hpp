@@ -33,20 +33,20 @@ class form;
 
 namespace detail
 {
-	struct native_drawing_context_impl { };
+    struct native_drawing_context_impl { };
 }
 using native_drawing_context = detail::native_drawing_context_impl*;
 
 class draw_context_creation_error : public std::runtime_error
 {
 public:
-	explicit draw_context_creation_error(const std::string& msg)
-		: std::runtime_error { msg } { }
+    explicit draw_context_creation_error(const std::string& msg)
+        : std::runtime_error { msg } { }
 };
 
 class draw_context : private boost::noncopyable
 {
-	native_drawing_context m_context = nullptr;
+    native_drawing_context m_context = nullptr;
 public:
     void initialize(form& frm);
 };
