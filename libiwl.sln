@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiwl", "libiwl\libiwl.vcxproj", "{4582BCFF-46FE-4701-96CD-48A2DB9900C0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo\demo.vcxproj", "{64889666-71A1-4A17-A45F-22B5B26F25F4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4582BCFF-46FE-4701-96CD-48A2DB9900C0} = {4582BCFF-46FE-4701-96CD-48A2DB9900C0}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{654D93AF-1456-4BA4-BD34-ABBE8C0D22D6}"
 	ProjectSection(SolutionItems) = preProject

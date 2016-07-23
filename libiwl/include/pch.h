@@ -30,6 +30,7 @@
 #include <gl/wglew.h>
 #include <windows.h>
 
+#include <functional>
 #include <algorithm>
 #include <vector>
 #include <string>

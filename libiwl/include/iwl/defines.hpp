@@ -25,6 +25,7 @@
 #ifndef IWL_DEFINES_HPP_
 #define IWL_DEFINES_HPP_
 
+#include <functional>
 #include <algorithm>
 #include <vector>
 #include <string>
