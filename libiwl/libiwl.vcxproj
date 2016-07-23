@@ -70,19 +70,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_DIR);$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GLEW_INSTALL)\prefixs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_DIR);$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GLEW_INSTALL)\prefixs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_DIR);$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GLEW_INSTALL)\prefix64s\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_DIR);$(GLEW_INSTALL)\include;$(GLM_INSTALL)\prefix\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GLEW_INSTALL)\prefix64s\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -162,23 +162,23 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="form.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="thread.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="iwl\defines.hpp" />
-    <ClInclude Include="iwl\form.hpp" />
-    <ClInclude Include="iwl\thread.hpp" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\iwl\drawing\drawing.cpp" />
+    <ClCompile Include="source\iwl\drawing\draw_context.cpp" />
+    <ClCompile Include="source\iwl\form.cpp" />
+    <ClCompile Include="source\iwl\thread.cpp" />
+    <ClCompile Include="source\pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\iwl\defines.hpp" />
+    <ClInclude Include="include\iwl\drawing\drawing.hpp" />
+    <ClInclude Include="include\iwl\drawing\draw_context.hpp" />
+    <ClInclude Include="include\iwl\event.hpp" />
+    <ClInclude Include="include\iwl\form.hpp" />
+    <ClInclude Include="include\iwl\thread.hpp" />
+    <ClInclude Include="include\pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

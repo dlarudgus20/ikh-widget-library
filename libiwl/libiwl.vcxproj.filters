@@ -1,48 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="iwl">
-      <UniqueIdentifier>{14453a6e-9242-4cba-94c1-c3fdbf3ba175}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="헤더 파일">
+    <Filter Include="source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="form.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="thread.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="iwl\form.hpp">
-      <Filter>iwl</Filter>
-    </ClInclude>
-    <ClInclude Include="iwl\thread.hpp">
-      <Filter>iwl</Filter>
-    </ClInclude>
-    <ClInclude Include="iwl\defines.hpp">
-      <Filter>iwl</Filter>
-    </ClInclude>
+    <Filter Include="include\iwl">
+      <UniqueIdentifier>{14453a6e-9242-4cba-94c1-c3fdbf3ba175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\iwl\drawing">
+      <UniqueIdentifier>{186ead06-1b48-4257-a36e-c9e99b09f520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\iwl">
+      <UniqueIdentifier>{4f732fe7-844f-4e77-84a8-78f3fc327dab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\iwl\drawing">
+      <UniqueIdentifier>{399d0eda-e0ba-4e2b-b288-2d967bde6bf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\iwl\drawing\draw_context.cpp">
+      <Filter>source\iwl\drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\iwl\drawing\drawing.cpp">
+      <Filter>source\iwl\drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="source\pch.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\iwl\thread.cpp">
+      <Filter>source\iwl</Filter>
+    </ClCompile>
+    <ClCompile Include="source\iwl\form.cpp">
+      <Filter>source\iwl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\pch.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\drawing\draw_context.hpp">
+      <Filter>include\iwl\drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\drawing\drawing.hpp">
+      <Filter>include\iwl\drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\defines.hpp">
+      <Filter>include\iwl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\form.hpp">
+      <Filter>include\iwl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\event.hpp">
+      <Filter>include\iwl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\thread.hpp">
+      <Filter>include\iwl</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
