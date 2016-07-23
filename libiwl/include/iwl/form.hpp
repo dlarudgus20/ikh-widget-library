@@ -27,20 +27,21 @@
 
 #include "defines.hpp"
 #include "drawing/draw_context.hpp"
+#include "drawing/drawing.hpp"
 
 BEGIN_IWL()
 
 namespace detail
 {
-	struct native_window_handle_impl { };
+    struct native_window_handle_impl { };
 }
 using native_window_handle = detail::native_window_handle_impl*;
 
 class form_creation_error : public std::runtime_error
 {
 public:
-	explicit form_creation_error(const std::string& msg)
-		: std::runtime_error { msg } { }
+    explicit form_creation_error(const std::string& msg)
+        : std::runtime_error { msg } { }
 };
 
 struct form_style
@@ -50,21 +51,22 @@ struct form_style
 class form : private boost::noncopyable
 {
 private:
-	native_window_handle m_wnd;
+    native_window_handle m_wnd;
 
-	draw_context m_draw_context;
+    draw_context m_draw_context;
+    
 
 public:
-	explicit form(const form_style& style = { });
+    explicit form(const form_style& style = { });
 
-	void show();
+    void show();
 
-	native_window_handle native_handle() const;
+    native_window_handle native_handle() const;
 };
 
 inline native_window_handle form::native_handle() const
 {
-	return m_wnd;
+    return m_wnd;
 }
 
 END_IWL()

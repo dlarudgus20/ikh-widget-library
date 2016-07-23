@@ -42,9 +42,9 @@
 
 // iwl namespace macro
 #define BEGIN_IWL() \
-	namespace iwl {
+    namespace iwl {
 
 #define END_IWL() \
-	}
+    }
 
 #endif // IWL_DEFINES_HPP_
