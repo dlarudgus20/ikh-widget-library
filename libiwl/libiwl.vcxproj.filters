@@ -25,14 +25,17 @@
     <Filter Include="source\iwl\drawing">
       <UniqueIdentifier>{399d0eda-e0ba-4e2b-b288-2d967bde6bf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\iwl\bedrock">
+      <UniqueIdentifier>{617f601d-be02-4f62-8c1f-2014ebcc7baa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\iwl\bedrock">
+      <UniqueIdentifier>{acb9ba51-93e2-4cf5-a919-b9e9a5502132}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\iwl\drawing\draw_context.cpp">
-      <Filter>source\iwl\drawing</Filter>
-    </ClCompile>
     <ClCompile Include="source\iwl\drawing\drawing.cpp">
       <Filter>source\iwl\drawing</Filter>
     </ClCompile>
@@ -45,13 +48,19 @@
     <ClCompile Include="source\iwl\form.cpp">
       <Filter>source\iwl</Filter>
     </ClCompile>
+    <ClCompile Include="source\iwl\bedrock\window.cpp">
+      <Filter>source\iwl\bedrock</Filter>
+    </ClCompile>
+    <ClCompile Include="source\iwl\bedrock\draw_context.cpp">
+      <Filter>source\iwl\bedrock</Filter>
+    </ClCompile>
+    <ClCompile Include="source\iwl\drawing\graphics.cpp">
+      <Filter>source\iwl\drawing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\pch.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\iwl\drawing\draw_context.hpp">
-      <Filter>include\iwl\drawing</Filter>
     </ClInclude>
     <ClInclude Include="include\iwl\drawing\drawing.hpp">
       <Filter>include\iwl\drawing</Filter>
@@ -67,6 +76,18 @@
     </ClInclude>
     <ClInclude Include="include\iwl\thread.hpp">
       <Filter>include\iwl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\drawing\types.hpp">
+      <Filter>include\iwl\drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\bedrock\draw_context.hpp">
+      <Filter>include\iwl\bedrock</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\bedrock\window.hpp">
+      <Filter>include\iwl\bedrock</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iwl\drawing\graphics.hpp">
+      <Filter>include\iwl\drawing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

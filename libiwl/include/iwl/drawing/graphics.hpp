@@ -22,35 +22,22 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_DRAWING_DRAW_CONTEXT_HPP_
-#define IWL_DRAWING_DRAW_CONTEXT_HPP_
+#ifndef IWL_DRAWING_GRAPHICS_HPP_
+#define IWL_DRAWING_GRAPHICS_HPP_
 
 #include "../defines.hpp"
+#include "../event.hpp"
+#include "types.hpp"
 
 BEGIN_IWL()
 
-class form;
-
-namespace detail
+class graphics : private boost::noncopyable
 {
-    struct native_drawing_context_impl { };
-}
-using native_drawing_context = detail::native_drawing_context_impl*;
+private:
 
-class draw_context_creation_error : public std::runtime_error
-{
 public:
-    explicit draw_context_creation_error(const std::string& msg)
-        : std::runtime_error { msg } { }
-};
-
-class draw_context : private boost::noncopyable
-{
-    native_drawing_context m_context = nullptr;
-public:
-    void initialize(form& frm);
 };
 
 END_IWL()
 
-#endif // IWL_DRAWING_DRAW_CONTEXT_HPP_
+#endif // IWL_DRAWING_GRAPHICS_HPP_

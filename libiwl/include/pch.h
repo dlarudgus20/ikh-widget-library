@@ -40,10 +40,12 @@
 #include <utility>
 #include <type_traits>
 
+#include <cstdint>
 #include <cstring>
 #include <cassert>
 
 #include <boost/noncopyable.hpp>
+#include <boost/optional.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

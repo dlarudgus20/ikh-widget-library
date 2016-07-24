@@ -23,38 +23,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "pch.h"
-#include "iwl/drawing/drawing.hpp"
 #include "iwl/drawing/graphics.hpp"
-#include "iwl/form.hpp"
 
 BEGIN_IWL()
 
-drawing::drawing(form& frm)
-    : m_frm(frm)
-{
-    if (!m_frm->drawing())
-    {
-        m_frm->drawing(*this);
-    }
-}
-
-drawing::~drawing()
-{
-    detach();
-}
-
-void drawing::draw(boost::optional<rectangle> clipping /* = { } */)
-{
-    graphics g;
-    on_draw.fire(g);
-}
-
-void drawing::detach()
-{
-    if (m_frm && m_frm->drawing() && std::addressof(*m_frm->drawing()) == this)
-    {
-        m_frm->drawing({ });
-    }
-}
 
 END_IWL()

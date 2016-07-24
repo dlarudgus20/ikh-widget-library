@@ -27,20 +27,27 @@
 
 #include "../defines.hpp"
 #include "../event.hpp"
+#include "types.hpp"
 
 BEGIN_IWL()
 
 class form;
+class graphics;
 
 class drawing : private boost::noncopyable
 {
 private:
-    form& m_frm;
+    boost::optional<form&> m_frm;
 
 public:
     explicit drawing(form& frm);
+    ~drawing();
 
-    event<drawing, void()> on_draw;
+    void draw(boost::optional<rectangle> clipping = { });
+
+    void detach();
+
+    event<drawing, void (graphics&)> on_draw;
 };
 
 END_IWL()

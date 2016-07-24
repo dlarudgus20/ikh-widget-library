@@ -37,8 +37,8 @@ class event<Owner, void(Args...)> final : private boost::noncopyable
 {
     friend Owner;
 public:
-    typedef void fn_type(Args...);
-    typedef std::function<fn_type> fn_obj_type;
+    using fn_type = void(Args...);
+    using fn_obj_type = std::function<fn_type>;
 
 private:
     std::vector<fn_obj_type> _m_lst_fn_fixed;
@@ -82,10 +82,10 @@ public:
         _m_lst_fn_removable.swap(other._m_lst_fn_removable);
     }
 
-    template <typename F, typename = std::enable_if<
-        std::is_convertible<std::remove_reference_t<F>, fn_obj_type>::value
-        >>
-    event& operator +=(F&& fn)
+    template <typename F, typename = std::enable_if_t<
+        std::is_convertible<std::remove_reference_t<F>, fn_obj_type>::value>
+    >
+        event& operator +=(F&& fn)
     {
         _m_lst_fn_fixed.emplace_back(
             std::forward<F>(fn));
@@ -110,6 +110,33 @@ private:
     template <typename ...Args2>
     void fire(Args2&&... args)
     {
+        fire_with_observer([] { }, std::forward<Args2>(args)...);
+    }
+
+    template <typename Observer, typename ...Args2>
+    void fire_with_observer(Observer&& observer, Args2&&... args)
+    {
+        using Result = std::result_of_t<Observer()>;
+        using Stoppable = std::conditional_t<std::is_same<Result, void>::value, std::false_type,
+            std::conditional_t<std::is_same<Result, bool>::value, std::true_type, void>>;
+        _fire_with_observer_impl(
+            Stoppable { },
+            [observer = std::forward<Observer>(observer)] { observer(); return true; },
+            std::forward<Args2>(args)...);
+    }
+
+    template <typename Observer, typename ...Args2>
+    void _fire_with_observer_impl(std::false_type, Observer&& observer, Args2&&... args)
+    {
+        _fire_with_observer_impl(
+            std::true_type { },
+            [observer = std::forward<Observer>(observer)] { observer(); return true; },
+            std::forward<Args2>(args)...);
+    }
+
+    template <typename Observer, typename ...Args2>
+    void _fire_with_observer_impl(std::true_type, Observer&& observer, Args2&&... args)
+    {
         _m_lst_fn_removable.erase(
             std::remove_if(_m_lst_fn_removable.begin(), _m_lst_fn_removable.end(),
                 [](const std::weak_ptr<fn_obj_type>& item) { return item.expired(); }),
@@ -118,22 +145,26 @@ private:
         for (const fn_obj_type& fn : _m_lst_fn_fixed)
         {
             fn(std::forward<Args2>(args)...);
+            if (!observer())
+                break;
         }
         for (const std::weak_ptr<fn_obj_type>& fn : _m_lst_fn_removable)
         {
             auto sptr = fn.lock();
             assert(sptr);
             (*sptr.get())(std::forward<Args2>(args)...);
+            if (!observer())
+                break;
         }
     }
 };
 
 template <typename ...Args>
-class event_slot<void(Args...)>
+class event_slot<void (Args...)>
 {
 public:
-    typedef void fn_type(Args...);
-    typedef std::function<fn_type> fn_obj_type;
+    using fn_type = void (Args...);
+    using fn_obj_type = std::function<fn_type>;
 
 private:
     std::shared_ptr<fn_obj_type> m_pfn;
@@ -187,7 +218,7 @@ event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator -=(
     _m_lst_fn_removable.erase(it, _m_lst_fn_removable.end());
 
     if (!succeeded)
-        throw std::invalid_argument("'fn' of event<>::operator -=()");
+        throw std::invalid_argument("'fn' of iwl::event<>::operator -=()");
 
     return *this;
 }

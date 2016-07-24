@@ -23,11 +23,18 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iwl/form.hpp>
+#include <iwl/drawing/drawing.hpp>
 #include <iwl/thread.hpp>
 
 int main()
 {
-	iwl::form frm;
-	frm.show();
-	iwl::loop();
+    iwl::form frm;
+
+    iwl::drawing d { frm };
+    d.on_draw += [](iwl::graphics& g) {
+        std::puts("drawing asdf");
+    };
+
+    frm.show();
+    iwl::loop();
 }

@@ -35,10 +35,12 @@
 #include <utility>
 #include <type_traits>
 
+#include <cstdint>
 #include <cstring>
 #include <cassert>
 
 #include <boost/noncopyable.hpp>
+#include <boost/optional.hpp>
 
 // iwl namespace macro
 #define BEGIN_IWL() \

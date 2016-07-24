@@ -34,8 +34,10 @@ add_library(libiwl
     source/pch.cpp
     source/iwl/form.cpp
     source/iwl/thread.cpp
+    source/iwl/bedrock/window.cpp
+    source/iwl/bedrock/draw_context.cpp
     source/iwl/drawing/drawing.cpp
-    source/iwl/drawing/draw_context.cpp
+    source/iwl/drawing/graphics.cpp
 )
 
 target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

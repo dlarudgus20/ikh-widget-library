@@ -22,39 +22,23 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/drawing/drawing.hpp"
-#include "iwl/drawing/graphics.hpp"
-#include "iwl/form.hpp"
+#ifndef IWL_DRAWING_TYPES_HPP_
+#define IWL_DRAWING_TYPES_HPP_
+
+#include "../defines.hpp"
 
 BEGIN_IWL()
 
-drawing::drawing(form& frm)
-    : m_frm(frm)
+struct point
 {
-    if (!m_frm->drawing())
-    {
-        m_frm->drawing(*this);
-    }
-}
+    float x, y;
+};
 
-drawing::~drawing()
+struct rectangle
 {
-    detach();
-}
-
-void drawing::draw(boost::optional<rectangle> clipping /* = { } */)
-{
-    graphics g;
-    on_draw.fire(g);
-}
-
-void drawing::detach()
-{
-    if (m_frm && m_frm->drawing() && std::addressof(*m_frm->drawing()) == this)
-    {
-        m_frm->drawing({ });
-    }
-}
+    point p1, p2;
+};
 
 END_IWL()
+
+#endif // IWL_DRAWING_TYPES_HPP_

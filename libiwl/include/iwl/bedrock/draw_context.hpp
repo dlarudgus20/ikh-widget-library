@@ -22,39 +22,38 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/drawing/drawing.hpp"
-#include "iwl/drawing/graphics.hpp"
-#include "iwl/form.hpp"
+#ifndef IWL_DRAWING_DRAW_CONTEXT_HPP_
+#define IWL_DRAWING_DRAW_CONTEXT_HPP_
+
+#include "../defines.hpp"
 
 BEGIN_IWL()
 
-drawing::drawing(form& frm)
-    : m_frm(frm)
+namespace bedrock
 {
-    if (!m_frm->drawing())
+    class window;
+
+    namespace detail
     {
-        m_frm->drawing(*this);
+        struct native_drawing_context_impl { };
     }
-}
+    using native_drawing_context = detail::native_drawing_context_impl*;
 
-drawing::~drawing()
-{
-    detach();
-}
-
-void drawing::draw(boost::optional<rectangle> clipping /* = { } */)
-{
-    graphics g;
-    on_draw.fire(g);
-}
-
-void drawing::detach()
-{
-    if (m_frm && m_frm->drawing() && std::addressof(*m_frm->drawing()) == this)
+    class draw_context_creation_error : public std::runtime_error
     {
-        m_frm->drawing({ });
-    }
+    public:
+        explicit draw_context_creation_error(const std::string& msg)
+            : std::runtime_error { msg } { }
+    };
+
+    class draw_context : private boost::noncopyable
+    {
+        native_drawing_context m_context = nullptr;
+    public:
+        void initialize(window& frm);
+    };
 }
 
 END_IWL()
+
+#endif // IWL_DRAWING_DRAW_CONTEXT_HPP_

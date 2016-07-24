@@ -26,8 +26,10 @@
 #define IWL_FORM_HPP_
 
 #include "defines.hpp"
-#include "drawing/draw_context.hpp"
+#include "bedrock/window.hpp"
+#include "bedrock/draw_context.hpp"
 #include "drawing/drawing.hpp"
+#include "event.hpp"
 
 BEGIN_IWL()
 
@@ -51,22 +53,33 @@ struct form_style
 class form : private boost::noncopyable
 {
 private:
-    native_window_handle m_wnd;
+    bedrock::window m_wnd;
+    bedrock::draw_context m_draw_context;
 
-    draw_context m_draw_context;
-    
+    boost::optional<iwl::drawing&> m_drawing;
 
 public:
     explicit form(const form_style& style = { });
 
     void show();
 
-    native_window_handle native_handle() const;
+    boost::optional<iwl::drawing&> drawing() const;
+    void drawing(boost::optional<iwl::drawing&> d);
+
+    event<form, void (bool& succeeded)> on_load;
+
+private:
+    bedrock::wndproc_result wndproc(bedrock::wndproc_msg msg, bedrock::wndproc_args& args);
 };
 
-inline native_window_handle form::native_handle() const
+inline boost::optional<iwl::drawing&> form::drawing() const
 {
-    return m_wnd;
+    return m_drawing;
+}
+
+inline void form::drawing(boost::optional<iwl::drawing&> d)
+{
+    m_drawing = d;
 }
 
 END_IWL()

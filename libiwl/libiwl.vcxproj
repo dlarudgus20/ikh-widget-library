@@ -165,8 +165,10 @@
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\iwl\bedrock\draw_context.cpp" />
+    <ClCompile Include="source\iwl\bedrock\window.cpp" />
     <ClCompile Include="source\iwl\drawing\drawing.cpp" />
-    <ClCompile Include="source\iwl\drawing\draw_context.cpp" />
+    <ClCompile Include="source\iwl\drawing\graphics.cpp" />
     <ClCompile Include="source\iwl\form.cpp" />
     <ClCompile Include="source\iwl\thread.cpp" />
     <ClCompile Include="source\pch.cpp">
@@ -177,9 +179,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\iwl\bedrock\draw_context.hpp" />
+    <ClInclude Include="include\iwl\bedrock\window.hpp" />
     <ClInclude Include="include\iwl\defines.hpp" />
     <ClInclude Include="include\iwl\drawing\drawing.hpp" />
-    <ClInclude Include="include\iwl\drawing\draw_context.hpp" />
+    <ClInclude Include="include\iwl\drawing\graphics.hpp" />
+    <ClInclude Include="include\iwl\drawing\types.hpp" />
     <ClInclude Include="include\iwl\event.hpp" />
     <ClInclude Include="include\iwl\form.hpp" />
     <ClInclude Include="include\iwl\thread.hpp" />
