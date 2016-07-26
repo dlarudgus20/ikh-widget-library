@@ -22,25 +22,64 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/drawing/drawing.hpp"
-#include "iwl/drawing/graphics.hpp"
-#include "iwl/widget/widget.hpp"
+#ifndef IWL_WIDGET_WIDGET_HPP_
+#define IWL_WIDGET_WIDGET_HPP_
+
+#include "../defines.hpp"
+#include "../event.hpp"
 
 BEGIN_IWL()
 
-drawing::drawing(widget& wd)
-    : m_wd { wd }
+class form;
+class graphics;
+
+class widget : private boost::noncopyable
 {
-    m_wd.on_paint += m_slot.set([this](graphics& g) {
-        on_draw.fire(g);
-    });
+    friend form;
+private:
+    form& m_frm;
+
+protected:
+    explicit widget(form& frm);
+
+public:
+    virtual ~widget() = 0;
+
+    form& parent_form() const;
+
+    event<widget, void (bool& succeeded)> on_load;
+    event<widget, void (graphics& g)> on_paint;
+
+private:
+    bool fire_load();
+    void fire_paint(graphics& g);
+};
+
+inline widget::widget(form& frm)
+    : m_frm { frm }
+{
 }
 
-void drawing::draw()
+inline form& widget::parent_form() const
 {
-    graphics g = graphics::from_widget(m_wd);
-    on_draw.fire(g);
+    return m_frm;
+}
+
+inline bool widget::fire_load()
+{
+    bool succeeded = true;
+    succeeded = true;
+    on_load.fire_with_observer(
+        [&]() { return succeeded; },
+        succeeded);
+    return succeeded;
+}
+
+inline void widget::fire_paint(graphics& g)
+{
+    on_paint.fire(g);
 }
 
 END_IWL()
+
+#endif // IWL_WIDGET_WIDGET_HPP_

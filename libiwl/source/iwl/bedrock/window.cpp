@@ -51,7 +51,7 @@ namespace bedrock
         wc.hInstance = ::GetModuleHandleW(nullptr);
         wc.lpfnWndProc = reinterpret_cast<WNDPROC>(&window::native_wndproc);
         wc.lpszMenuName = nullptr;
-        wc.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
+        wc.style = CS_VREDRAW | CS_HREDRAW;
         wc.lpszClassName = strcls.c_str();
 
         if (::RegisterClassExW(&wc) == 0)
@@ -93,6 +93,12 @@ namespace bedrock
         ::ShowWindow((HWND)m_wnd, SW_NORMAL);
     }
 
+    graphics window::create_graphics()
+    {
+        HDC hdc = ::GetDC(reinterpret_cast<HWND>(m_wnd));
+        return graphics::from_handle(reinterpret_cast<native_graphics_handle>(hdc));
+    }
+
     std::uintptr_t __stdcall window::native_wndproc(native_window_handle wnd, std::uint32_t iMsg, std::uintptr_t wParam, std::uintptr_t lParam)
     {
         HWND hWnd = reinterpret_cast<HWND>(wnd);
@@ -109,24 +115,32 @@ namespace bedrock
 
         window* ptr_wnd = reinterpret_cast<window*>(::GetWindowLongPtrW(hWnd, 0));
         auto& wndproc = ptr_wnd->m_wndproc;
-        wndproc_args args;
+        wndproc_args wa;
 
         PAINTSTRUCT ps;
 
         switch (iMsg)
         {
             case WM_CREATE:
-                if (wndproc(wndproc_msg::load, args) == succeeded)
-                    return 0;
-                else
-                    return -1;
+                {
+                    wa = load_args { };
+                    if (wndproc(wa) == succeeded)
+                        return 0;
+                    else
+                        return -1;
+                }
             case WM_PAINT:
-                ::BeginPaint(hWnd, &ps);
-                args.paint.clipping = {
-                    static_cast<float>(ps.rcPaint.left), static_cast<float>(ps.rcPaint.top),
-                    static_cast<float>(ps.rcPaint.right), static_cast<float>(ps.rcPaint.bottom) };
-                wndproc(wndproc_msg::paint, args);
-                ::EndPaint(hWnd, &ps);
+                {
+                    ::BeginPaint(hWnd, &ps);
+                    native_graphics_handle handle = reinterpret_cast<native_graphics_handle>(ps.hdc);
+                    paint_args args = { .g = graphics::from_handle(handle) };
+                    wa = std::move(args);
+                    wndproc(wa);
+                    ::EndPaint(hWnd, &ps);
+                    return 0;
+                }
+            case WM_NCDESTROY:
+                ptr_wnd->m_draw_context.deinitialize();
                 return 0;
         }
 

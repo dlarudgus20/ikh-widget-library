@@ -33,12 +33,6 @@ namespace bedrock
 {
     class window;
 
-    namespace detail
-    {
-        struct native_drawing_context_impl { };
-    }
-    using native_drawing_context = detail::native_drawing_context_impl*;
-
     class draw_context_creation_error : public std::runtime_error
     {
     public:
@@ -48,9 +42,15 @@ namespace bedrock
 
     class draw_context : private boost::noncopyable
     {
-        native_drawing_context m_context = nullptr;
+    private:
+        window* m_ptr_wnd = nullptr;
+        std::shared_ptr<void> m_ptr_context;
+
     public:
-        void initialize(window& frm);
+        ~draw_context();
+
+        void initialize(window& wnd);
+        void deinitialize();
     };
 }
 

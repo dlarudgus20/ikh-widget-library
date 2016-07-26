@@ -23,7 +23,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "pch.h"
-#include "iwl/form.hpp"
+#include "iwl/thread.hpp"
+
+#include <windows.h>
 
 BEGIN_IWL()
 

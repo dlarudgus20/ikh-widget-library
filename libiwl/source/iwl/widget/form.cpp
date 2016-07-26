@@ -22,66 +22,46 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_FORM_HPP_
-#define IWL_FORM_HPP_
-
-#include "defines.hpp"
-#include "bedrock/window.hpp"
-#include "bedrock/draw_context.hpp"
-#include "drawing/drawing.hpp"
-#include "event.hpp"
+#include "pch.h"
+#include "iwl/widget/form.hpp"
+#include "iwl/drawing/graphics.hpp"
 
 BEGIN_IWL()
 
-namespace detail
+form::form(const form_style& style /* = { } */)
+    : widget { *this }
 {
-    struct native_window_handle_impl { };
-}
-using native_window_handle = detail::native_window_handle_impl*;
+    auto proc = [this](auto&& args) { return this->wndproc(args); };
 
-class form_creation_error : public std::runtime_error
-{
-public:
-    explicit form_creation_error(const std::string& msg)
-        : std::runtime_error { msg } { }
-};
-
-struct form_style
-{
-};
-
-class form : private boost::noncopyable
-{
-private:
-    bedrock::window m_wnd;
-    bedrock::draw_context m_draw_context;
-
-    boost::optional<iwl::drawing&> m_drawing;
-
-public:
-    explicit form(const form_style& style = { });
-
-    void show();
-
-    boost::optional<iwl::drawing&> drawing() const;
-    void drawing(boost::optional<iwl::drawing&> d);
-
-    event<form, void (bool& succeeded)> on_load;
-
-private:
-    bedrock::wndproc_result wndproc(bedrock::wndproc_msg msg, bedrock::wndproc_args& args);
-};
-
-inline boost::optional<iwl::drawing&> form::drawing() const
-{
-    return m_drawing;
+    const char* errmsg;
+    if (!m_wnd.create(proc, errmsg))
+        throw form_creation_error(errmsg);
 }
 
-inline void form::drawing(boost::optional<iwl::drawing&> d)
+void form::show()
 {
-    m_drawing = d;
+    m_wnd.show();
+}
+
+inline bedrock::wndproc_result form::wndproc(bedrock::wndproc_args& args)
+{
+    return boost::apply_visitor(
+        [this](auto& args) { return this->wndproc_handler(args); },
+        args);
+}
+
+bedrock::wndproc_result form::wndproc_handler(bedrock::load_args& args)
+{
+    if (fire_load())
+        return bedrock::wndproc_result::succeeded;
+    else
+        return bedrock::wndproc_result::failed;
+}
+
+bedrock::wndproc_result form::wndproc_handler(bedrock::paint_args& args)
+{
+    fire_paint(args.g);
+    return bedrock::wndproc_result::succeeded;
 }
 
 END_IWL()
-
-#endif // IWL_FORM_HPP_

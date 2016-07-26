@@ -32,8 +32,9 @@ add_definitions(-DUNICODE)
 
 add_library(libiwl
     source/pch.cpp
-    source/iwl/form.cpp
     source/iwl/thread.cpp
+    source/iwl/widget/form.cpp
+    source/iwl/widget/widget.cpp
     source/iwl/bedrock/window.cpp
     source/iwl/bedrock/draw_context.cpp
     source/iwl/drawing/drawing.cpp
@@ -41,3 +42,4 @@ add_library(libiwl
 )
 
 target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(libiwl PUBLIC gdiplus)

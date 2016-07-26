@@ -26,80 +26,57 @@
 #include "iwl/bedrock/draw_context.hpp"
 #include "iwl/bedrock/window.hpp"
 
+#include <windows.h>
+#include <gdiplus.h>
+
 namespace
 {
-    bool s_bGlewInited = false;
+    using namespace iwl::bedrock;
+
+    struct context_t
+    {
+        ULONG_PTR gpToken;
+        Gdiplus::GdiplusStartupInput gsi;
+        context_t()
+        {
+            if (Gdiplus::GdiplusStartup(&gpToken, &gsi, nullptr) != Gdiplus::Ok)
+                throw draw_context_creation_error("cannot initialize gdi+");
+        }
+        ~context_t()
+        {
+            Gdiplus::GdiplusShutdown(gpToken);
+        }
+    };
+    std::weak_ptr<context_t> s_ptr_context;
 }
 
 BEGIN_IWL()
 
 namespace bedrock
 {
-    void draw_context::initialize(window& frm)
+    draw_context::~draw_context()
     {
-        HWND hWnd = reinterpret_cast<HWND>(frm.native_handle());
-        HDC hdc = ::GetDC(hWnd);
+        if (m_ptr_wnd)
+            deinitialize();
+    }
 
-        PIXELFORMATDESCRIPTOR pfd;
-        std::memset(&pfd, 0, sizeof(pfd));
-        pfd.nVersion = 1;
-        pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-        pfd.iPixelType = PFD_TYPE_RGBA;
-        pfd.cColorBits = 32;
-        pfd.cDepthBits = 24;
-        pfd.cStencilBits = 8;
-        pfd.iLayerType = PFD_MAIN_PLANE;
+    void draw_context::initialize(window& wnd)
+    {
+        m_ptr_wnd = &wnd;
 
-        int iPixelFormat = ::ChoosePixelFormat(hdc, &pfd);
-        if (iPixelFormat == 0)
-            throw draw_context_creation_error("opengl is not supported");
-
-        if (!::SetPixelFormat(hdc, iPixelFormat, &pfd))
-            throw draw_context_creation_error("opengl is not supported");
-
-        HGLRC hFakeContext = ::wglCreateContext(hdc);
-        ::wglMakeCurrent(hdc, hFakeContext);
-
-        if (!s_bGlewInited)
+        auto pc = s_ptr_context.lock();
+        if (!pc)
         {
-            if (::glewInit() != GLEW_OK)
-                throw draw_context_creation_error("cannot initialize glew");
-            s_bGlewInited = true;
+            pc = std::make_shared<context_t>();
+            s_ptr_context = pc;
         }
+        m_ptr_context = std::move(pc);
+    }
 
-        ::wglMakeCurrent(nullptr, nullptr);
-        ::wglDeleteContext(hFakeContext);
-
-        if (!WGLEW_ARB_create_context || !WGLEW_ARB_pixel_format)
-            throw draw_context_creation_error("opengl 3.3 is not supported");
-
-        const int pixel_attribs[] = {
-            WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-            WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-            WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-            WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-            WGL_COLOR_BITS_ARB, 32,
-            WGL_DEPTH_BITS_ARB, 24,
-            WGL_STENCIL_BITS_ARB, 8,
-            0
-        };
-        const int context_attribs[] = {
-            WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-            WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-            WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-            0
-        };
-
-        UINT iNumFormats;
-        ::wglChoosePixelFormatARB(hdc, pixel_attribs, nullptr, 1, &iPixelFormat, &iNumFormats);
-
-        if (!::SetPixelFormat(hdc, iPixelFormat, &pfd))
-            throw draw_context_creation_error("opengl 3.3 is not supported");
-
-        HGLRC hContext = ::wglCreateContextAttribsARB(hdc, 0, context_attribs);
-        m_context = reinterpret_cast<native_drawing_context>(hContext);
-        if (m_context == nullptr)
-            throw draw_context_creation_error("opengl 3.3 is not supported");
+    void draw_context::deinitialize()
+    {
+        m_ptr_wnd = nullptr;
+        m_ptr_context.reset();
     }
 }
 

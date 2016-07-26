@@ -180,8 +180,7 @@ public:
     template <typename F>
     event_slot& set(F&& f)
     {
-        m_pfn = std::make_shared<event_slot>(
-            std::forward<F>(f));
+        m_pfn = std::make_shared<fn_obj_type>(std::forward<F>(f));
         return *this;
     }
 

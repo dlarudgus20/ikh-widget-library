@@ -24,8 +24,23 @@
 
 #include "pch.h"
 #include "iwl/drawing/graphics.hpp"
+#include "iwl/widget/widget.hpp"
+#include "iwl/widget/form.hpp"
+
+#include <windows.h>
 
 BEGIN_IWL()
 
+graphics graphics::from_handle(native_graphics_handle handle)
+{
+    graphics g;
+    g.m_handle = handle;
+    return g;
+}
+
+graphics graphics::from_widget(widget& wd)
+{
+    return wd.parent_form().bedrock().create_graphics();
+}
 
 END_IWL()

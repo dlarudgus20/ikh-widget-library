@@ -22,47 +22,63 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/form.hpp"
+#ifndef IWL_WIDGET_FORM_HPP_
+#define IWL_WIDGET_FORM_HPP_
+
+#include "../defines.hpp"
+#include "widget.hpp"
+
+#include "../bedrock/window.hpp"
+#include "../event.hpp"
 
 BEGIN_IWL()
 
-form::form(const form_style& style /* = { } */)
+namespace detail
 {
-    auto proc = [this](auto&& msg, auto&& args) { return wndproc(msg, args); };
+    struct native_window_handle_impl { };
+}
+using native_window_handle = detail::native_window_handle_impl*;
 
-    const char* errmsg;
-    if (!m_wnd.create(proc, errmsg))
-        throw form_creation_error(errmsg);
+class form_creation_error : public std::runtime_error
+{
+public:
+    explicit form_creation_error(const std::string& msg)
+        : std::runtime_error { msg } { }
+};
 
-    m_draw_context.initialize(m_wnd);
+struct form_style
+{
+};
+
+class form : public widget
+{
+private:
+    bedrock::window m_wnd;
+
+public:
+    explicit form(const form_style& style = { });
+    void show();
+
+    bedrock::window& bedrock();
+    const bedrock::window& bedrock() const;
+
+private:
+    bedrock::wndproc_result wndproc(bedrock::wndproc_args& args);
+
+    bedrock::wndproc_result wndproc_handler(bedrock::load_args& args);
+    bedrock::wndproc_result wndproc_handler(bedrock::paint_args& args);
+};
+
+inline bedrock::window& form::bedrock()
+{
+    return m_wnd;
 }
 
-void form::show()
+inline const bedrock::window& form::bedrock() const
 {
-    m_wnd.show();
+    return m_wnd;
 }
-
-inline bedrock::wndproc_result form::wndproc(bedrock::wndproc_msg msg, bedrock::wndproc_args& args)
-{
-    bool succeeded;
-
-    switch (msg)
-    {
-        case bedrock::wndproc_msg::load:
-            succeeded = true;
-            on_load.fire_with_observer(
-                [&]() { return succeeded; },
-                succeeded);
-            return (succeeded ? bedrock::wndproc_result::succeeded : bedrock::wndproc_result::failed);
-        case bedrock::wndproc_msg::paint:
-            if (m_drawing)
-                m_drawing->draw(args.paint.clipping);
-            return bedrock::wndproc_result::succeeded;
-        default:
-            return bedrock::wndproc_result::succeeded;
-    }
-}
-
 
 END_IWL()
+
+#endif // IWL_WIDGET_FORM_HPP_

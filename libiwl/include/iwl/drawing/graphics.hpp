@@ -31,12 +31,46 @@
 
 BEGIN_IWL()
 
+class widget;
+namespace bedrock
+{
+    class window;
+}
+
+namespace detail
+{
+    struct native_graphics_handle_impl { };
+}
+using native_graphics_handle = detail::native_graphics_handle_impl*;
+
 class graphics : private boost::noncopyable
 {
+    friend bedrock::window;
 private:
+    native_graphics_handle m_handle;
+
+    graphics() = default;
+    static graphics from_handle(native_graphics_handle handle);
 
 public:
+    static graphics from_widget(widget& wd);
+
+    graphics(graphics&& other);
+    graphics& operator =(graphics&& other);
 };
+
+inline graphics::graphics(graphics&& other)
+{
+    m_handle = other.m_handle;
+    other.m_handle = nullptr;
+}
+
+inline graphics& graphics::operator =(graphics&& other)
+{
+    m_handle = other.m_handle;
+    other.m_handle = nullptr;
+    return *this;
+}
 
 END_IWL()
 

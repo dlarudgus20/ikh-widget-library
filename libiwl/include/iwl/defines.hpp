@@ -40,7 +40,7 @@
 #include <cassert>
 
 #include <boost/noncopyable.hpp>
-#include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 // iwl namespace macro
 #define BEGIN_IWL() \

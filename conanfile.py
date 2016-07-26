@@ -34,9 +34,7 @@ class Project(ConanFile):
 
     settings = 'os', 'compiler', 'build_type', 'arch'
     requires = \
-        'Boost/1.60.0@lasote/stable', \
-        'glew/1.13.0@coding3d/ci', \
-        'glm/0.9.7.6@dlarudgus20/stable'
+        'Boost/1.60.0@lasote/stable'
     generators = 'cmake'
     # default_options = \
     #     "glew:shared = False"

@@ -31,21 +31,19 @@
 
 BEGIN_IWL()
 
-class form;
+class widget;
 class graphics;
 
 class drawing : private boost::noncopyable
 {
 private:
-    boost::optional<form&> m_frm;
+    widget& m_wd;
+    event_slot<void (graphics& g)> m_slot;
 
 public:
-    explicit drawing(form& frm);
-    ~drawing();
+    explicit drawing(widget& wd);
 
-    void draw(boost::optional<rectangle> clipping = { });
-
-    void detach();
+    void draw();
 
     event<drawing, void (graphics&)> on_draw;
 };

@@ -27,6 +27,7 @@
 
 #include "../defines.hpp"
 #include "../bedrock/draw_context.hpp"
+#include "../drawing/graphics.hpp"
 #include "../drawing/types.hpp"
 
 BEGIN_IWL()
@@ -52,23 +53,18 @@ namespace bedrock
         failed,
     };
 
-    enum wndproc_msg
+    struct load_args { };
+    struct paint_args
     {
-        load,
-        paint,
+        graphics g;
     };
-
-    union wndproc_args
-    {
-        struct paint_t
-        {
-            rectangle clipping;
-        } paint;
-    };
+    using wndproc_args = boost::variant<
+        load_args,
+        paint_args>;
 
     class window : private boost::noncopyable
     {
-        using wndproc_t = std::function<wndproc_result (wndproc_msg, wndproc_args&)>;
+        using wndproc_t = std::function<wndproc_result (wndproc_args&)>;
     private:
         native_window_handle m_wnd = nullptr;
         draw_context m_draw_context;
@@ -76,9 +72,10 @@ namespace bedrock
         wndproc_t m_wndproc;
 
     public:
-        bool create(wndproc_t wndproc, const char*& ptr_errmsg);
-
+        bool create(wndproc_t wndproc, const char*& errmsg);
         void show();
+
+        graphics create_graphics();
 
         native_window_handle native_handle() const;
 

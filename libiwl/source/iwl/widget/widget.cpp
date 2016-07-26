@@ -23,24 +23,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "pch.h"
-#include "iwl/drawing/drawing.hpp"
-#include "iwl/drawing/graphics.hpp"
 #include "iwl/widget/widget.hpp"
 
 BEGIN_IWL()
 
-drawing::drawing(widget& wd)
-    : m_wd { wd }
+widget::~widget()
 {
-    m_wd.on_paint += m_slot.set([this](graphics& g) {
-        on_draw.fire(g);
-    });
-}
-
-void drawing::draw()
-{
-    graphics g = graphics::from_widget(m_wd);
-    on_draw.fire(g);
 }
 
 END_IWL()
