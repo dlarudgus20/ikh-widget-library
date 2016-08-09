@@ -22,53 +22,88 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_WIDGET_FORM_HPP_
-#define IWL_WIDGET_FORM_HPP_
+#include "pch.h"
+#include "iwl/drawing/brush.hpp"
 
-#include "../defines.hpp"
-#include "widget.hpp"
-
-#include "../bedrock/window.hpp"
-#include "../event.hpp"
+#include <gdiplus.h>
 
 BEGIN_IWL()
 
-namespace detail
+brush::~brush() = default;
+
+struct solid_brush::impl
 {
-    struct native_window_handle_impl { };
+    Gdiplus::SolidBrush _brush;
+};
+
+solid_brush::~solid_brush()
+{
+
 }
-using native_window_handle = detail::native_window_handle_impl*;
 
-class form_creation_error : public std::runtime_error
+void solid_brush::swap(solid_brush& other) noexcept
 {
-public:
-    explicit form_creation_error(const std::string& msg)
-        : std::runtime_error { msg } { }
+    m_pimpl.swap(other.m_pimpl);
+}
+
+struct hatch_brush::impl
+{
+    Gdiplus::HatchBrush _brush;
 };
 
-struct form_style
+hatch_brush::~hatch_brush()
 {
+
+}
+
+void hatch_brush::swap(hatch_brush& other) noexcept
+{
+    m_pimpl.swap(other.m_pimpl);
+}
+
+struct linear_gradient_brush::impl
+{
+    Gdiplus::LinearGradientBrush _brush;
 };
 
-class form : public widget
+linear_gradient_brush::~linear_gradient_brush()
 {
-private:
-    bedrock::window m_wnd;
 
-public:
-    explicit form(const form_style& style = { });
-    void show();
+}
 
-    bedrock::window& bedrock();
-    const bedrock::window& bedrock() const;
+void linear_gradient_brush::swap(linear_gradient_brush& other) noexcept
+{
+    m_pimpl.swap(other.m_pimpl);
+}
 
-private:
-    bedrock::wndproc_result wndproc(bedrock::wndproc_args& args);
-
-    bedrock::wndproc_result wndproc_handler(bedrock::load_args& args);
-    bedrock::wndproc_result wndproc_handler(bedrock::paint_args& args);
+struct path_gradient_brush::impl
+{
+    Gdiplus::PathGradientBrush _brush;
 };
+
+path_gradient_brush::~path_gradient_brush()
+{
+
+}
+
+void path_gradient_brush::swap(path_gradient_brush& other) noexcept
+{
+    m_pimpl.swap(other.m_pimpl);
+}
+
+struct texture_brush::impl
+{
+    Gdiplus::TextureBrush _brush;
+};
+
+texture_brush::~texture_brush()
+{
+
+}
+
+void texture_brush::swap(texture_brush& other) noexcept
+{
+    m_pimpl.swap(other.m_pimpl);
+}
 
 END_IWL()
-
-#endif // IWL_WIDGET_FORM_HPP_

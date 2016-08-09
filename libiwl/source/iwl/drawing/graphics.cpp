@@ -31,6 +31,24 @@
 
 BEGIN_IWL()
 
+graphics::graphics(graphics&& other)
+{
+    m_handle = other.m_handle;
+    other.m_handle = nullptr;
+}
+
+graphics& graphics::operator =(graphics&& other)
+{
+    m_handle = other.m_handle;
+    other.m_handle = nullptr;
+    return *this;
+}
+
+void graphics::swap(graphics& other) noexcept
+{
+    std::swap(m_handle, other.m_handle);
+}
+
 graphics graphics::from_handle(native_graphics_handle handle)
 {
     graphics g;

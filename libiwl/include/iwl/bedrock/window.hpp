@@ -83,11 +83,6 @@ namespace bedrock
         static std::uintptr_t __stdcall native_wndproc(
             native_window_handle wnd, std::uint32_t iMsg, std::uintptr_t wParam, std::uintptr_t lParam);
     };
-
-    inline native_window_handle window::native_handle() const
-    {
-        return m_wnd;
-    }
 }
 
 END_IWL()

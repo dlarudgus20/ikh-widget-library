@@ -27,8 +27,33 @@
 
 BEGIN_IWL()
 
+widget::widget(form& frm)
+    : m_frm { frm }
+{
+}
+
 widget::~widget()
 {
+}
+
+form& widget::parent_form() const
+{
+    return m_frm;
+}
+
+bool widget::fire_load()
+{
+    bool succeeded = true;
+    succeeded = true;
+    on_load.fire_with_observer(
+        [&]() { return succeeded; },
+        succeeded);
+    return succeeded;
+}
+
+void widget::fire_paint(graphics& g)
+{
+    on_paint.fire(g);
 }
 
 END_IWL()

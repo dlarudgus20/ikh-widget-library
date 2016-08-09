@@ -57,19 +57,13 @@ public:
 
     graphics(graphics&& other);
     graphics& operator =(graphics&& other);
+    void swap(graphics& other) noexcept;
 };
 
-inline graphics::graphics(graphics&& other)
+namespace std
 {
-    m_handle = other.m_handle;
-    other.m_handle = nullptr;
-}
-
-inline graphics& graphics::operator =(graphics&& other)
-{
-    m_handle = other.m_handle;
-    other.m_handle = nullptr;
-    return *this;
+    template <>
+    void swap(graphics& a, graphics& b) noexcept { a.swap(b); }
 }
 
 END_IWL()

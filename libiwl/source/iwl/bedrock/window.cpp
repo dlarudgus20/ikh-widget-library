@@ -99,6 +99,11 @@ namespace bedrock
         return graphics::from_handle(reinterpret_cast<native_graphics_handle>(hdc));
     }
 
+    native_window_handle window::native_handle() const
+    {
+        return m_wnd;
+    }
+
     std::uintptr_t __stdcall window::native_wndproc(native_window_handle wnd, std::uint32_t iMsg, std::uintptr_t wParam, std::uintptr_t lParam)
     {
         HWND hWnd = reinterpret_cast<HWND>(wnd);
@@ -133,7 +138,7 @@ namespace bedrock
                 {
                     ::BeginPaint(hWnd, &ps);
                     native_graphics_handle handle = reinterpret_cast<native_graphics_handle>(ps.hdc);
-                    paint_args args = { .g = graphics::from_handle(handle) };
+                    paint_args args = { graphics::from_handle(handle) };
                     wa = std::move(args);
                     wndproc(wa);
                     ::EndPaint(hWnd, &ps);

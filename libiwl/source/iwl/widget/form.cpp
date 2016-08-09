@@ -43,7 +43,17 @@ void form::show()
     m_wnd.show();
 }
 
-inline bedrock::wndproc_result form::wndproc(bedrock::wndproc_args& args)
+bedrock::window& form::bedrock()
+{
+    return m_wnd;
+}
+
+const bedrock::window& form::bedrock() const
+{
+    return m_wnd;
+}
+
+bedrock::wndproc_result form::wndproc(bedrock::wndproc_args& args)
 {
     return boost::apply_visitor(
         [this](auto& args) { return this->wndproc_handler(args); },

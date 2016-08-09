@@ -55,31 +55,6 @@ private:
     void fire_paint(graphics& g);
 };
 
-inline widget::widget(form& frm)
-    : m_frm { frm }
-{
-}
-
-inline form& widget::parent_form() const
-{
-    return m_frm;
-}
-
-inline bool widget::fire_load()
-{
-    bool succeeded = true;
-    succeeded = true;
-    on_load.fire_with_observer(
-        [&]() { return succeeded; },
-        succeeded);
-    return succeeded;
-}
-
-inline void widget::fire_paint(graphics& g)
-{
-    on_paint.fire(g);
-}
-
 END_IWL()
 
 #endif // IWL_WIDGET_WIDGET_HPP_
