@@ -29,197 +29,396 @@
 
 BEGIN_IWL()
 
-template <typename Owner, typename F> class event;
-template <typename F> class event_slot;
+// event_invoker_last
 
-template <typename Owner, typename ...Args>
-class event<Owner, void(Args...)> final : private boost::noncopyable
+template <typename Proto>
+struct event_invoker_last;
+template <typename Result, typename ...Args>
+struct event_invoker_last<Result (Args...)>
 {
-    friend Owner;
-public:
-    using fn_type = void(Args...);
-    using fn_obj_type = std::function<fn_type>;
-
-private:
-    std::vector<fn_obj_type> _m_lst_fn_fixed;
-    std::vector<std::weak_ptr<fn_obj_type> > _m_lst_fn_removable;
-
-public:
-    event() = default;
-    event(event&& other)
-        : _m_lst_fn_fixed(std::move(other._m_lst_fn_fixed))
-        , _m_lst_fn_removable(std::move(other._m_lst_fn_removable))
-    {
-    }
-    template <typename O>
-    event(event<O, void(Args...)>&& other)
-        : _m_lst_fn_fixed(std::move(other._m_lst_fn_fixed))
-        , _m_lst_fn_removable(std::move(other._m_lst_fn_removable))
-    {
-    }
-    event& operator =(event&& other)
-    {
-        _m_lst_fn_fixed = std::move(other._m_lst_fn_fixed);
-        _m_lst_fn_removable = std::move(other._m_lst_fn_removable);
-        return *this;
-    }
-    template <typename O>
-    event& operator =(event<O, void(Args...)>&& other)
-    {
-        _m_lst_fn_fixed = std::move(other._m_lst_fn_fixed);
-        _m_lst_fn_removable = std::move(other._m_lst_fn_removable);
-        return *this;
-    }
-    void swap(event& other) noexcept
-    {
-        _m_lst_fn_fixed.swap(other._m_lst_fn_fixed);
-        _m_lst_fn_removable.swap(other._m_lst_fn_removable);
-    }
-    template <typename O>
-    void swap(event<O, void(Args...)>& other) noexcept
-    {
-        _m_lst_fn_fixed.swap(other._m_lst_fn_fixed);
-        _m_lst_fn_removable.swap(other._m_lst_fn_removable);
-    }
-
-    template <typename F, typename = std::enable_if_t<
-        std::is_convertible<std::remove_reference_t<F>, fn_obj_type>::value>
-    >
-        event& operator +=(F&& fn)
-    {
-        _m_lst_fn_fixed.emplace_back(
-            std::forward<F>(fn));
-        return *this;
-    }
-
-    event& operator +=(event_slot<void(Args...)>& efp);
-    event& operator -=(event_slot<void(Args...)>& efp);
-
-    void clear()
-    {
-        _m_lst_fn_fixed.clear();
-        _m_lst_fn_removable.clear();
-    }
-
-    bool empty() const
-    {
-        return _m_lst_fn_fixed.empty() && _m_lst_fn_removable.empty();
-    }
-
-private:
     template <typename ...Args2>
-    void fire(Args2&&... args)
+    bool operator ()(const std::function<Result (Args2...)>& fn, Args2&&... args)
     {
-        fire_with_observer([] { }, std::forward<Args2>(args)...);
+        m_rs = fn(std::forward<Args2>(args)...);
+        return true;
     }
-
-    template <typename Observer, typename ...Args2>
-    void fire_with_observer(Observer&& observer, Args2&&... args)
+    Result& result()
     {
-        using Result = std::result_of_t<Observer()>;
-        using Stoppable = std::conditional_t<std::is_same<Result, void>::value, std::false_type,
-            std::conditional_t<std::is_same<Result, bool>::value, std::true_type, void>>;
-        _fire_with_observer_impl(
-            Stoppable { },
-            [observer = std::forward<Observer>(observer)] { observer(); return true; },
-            std::forward<Args2>(args)...);
+        return m_rs;
     }
-
-    template <typename Observer, typename ...Args2>
-    void _fire_with_observer_impl(std::false_type, Observer&& observer, Args2&&... args)
-    {
-        _fire_with_observer_impl(
-            std::true_type { },
-            [observer = std::forward<Observer>(observer)] { observer(); return true; },
-            std::forward<Args2>(args)...);
-    }
-
-    template <typename Observer, typename ...Args2>
-    void _fire_with_observer_impl(std::true_type, Observer&& observer, Args2&&... args)
-    {
-        _m_lst_fn_removable.erase(
-            std::remove_if(_m_lst_fn_removable.begin(), _m_lst_fn_removable.end(),
-                [](const std::weak_ptr<fn_obj_type>& item) { return item.expired(); }),
-            _m_lst_fn_removable.end());
-
-        for (const fn_obj_type& fn : _m_lst_fn_fixed)
-        {
-            fn(std::forward<Args2>(args)...);
-            if (!observer())
-                break;
-        }
-        for (const std::weak_ptr<fn_obj_type>& fn : _m_lst_fn_removable)
-        {
-            auto sptr = fn.lock();
-            assert(sptr);
-            (*sptr.get())(std::forward<Args2>(args)...);
-            if (!observer())
-                break;
-        }
-    }
-};
-
-template <typename ...Args>
-class event_slot<void (Args...)>
-{
-public:
-    using fn_type = void (Args...);
-    using fn_obj_type = std::function<fn_type>;
-
 private:
-    std::shared_ptr<fn_obj_type> m_pfn;
-
-public:
-    event_slot() = default;
-    template <typename F> event_slot(F&& f)
-        : m_pfn(std::make_shared<fn_obj_type>(std::forward<F>(f)))
+    Result m_rs { }; // initialize by default value
+};
+template <typename ...Args>
+struct event_invoker_last<void (Args...)>
+{
+    template <typename ...Args2>
+    bool operator ()(const std::function<void (Args2...)>& fn, Args2&&... args)
     {
-
+        fn(std::forward<Args2>(args)...);
+        return true;
     }
-
-    template <typename F>
-    event_slot& set(F&& f)
-    {
-        m_pfn = std::make_shared<fn_obj_type>(std::forward<F>(f));
-        return *this;
-    }
-
-    const std::shared_ptr<fn_obj_type>& get_ptr() const
-    {
-        return m_pfn;
-    }
+    void result() { }
 };
 
-template <typename Owner, typename ...Args>
-event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator +=(
-    event_slot<typename event<Owner, void(Args...)>::fn_type>& fn)
+// event & detail::event_base forward declaration
+template <typename Proto, typename Invoker = event_invoker_last<Proto>>
+class event;
+
+namespace detail
 {
-    _m_lst_fn_removable.emplace_back(fn.get_ptr());
-    return *this;
+    template <typename Result, typename ...Args>
+    class event_base;
 }
 
-template <typename Owner, typename ...Args>
-event<Owner, void(Args...)>& event<Owner, void(Args...)>::operator -=(
-    event_slot<typename event<Owner, void(Args...)>::fn_type>& fn)
+// event_slot declaration
+
+class event_slot final
 {
-    bool succeeded = false;
-    auto it = std::remove_if(_m_lst_fn_removable.begin(), _m_lst_fn_removable.end(),
-        [&fn, &succeeded](const std::weak_ptr<fn_obj_type>& item) {
-            auto sptr = item.lock();
+    template <typename Proto, typename Invoker>
+    friend class event;
 
-            if (sptr == fn.get_ptr())   // found
-                return (succeeded = true);
-            else if (!sptr)             // expired
-                return true;
-            else                        // otherwise
+private:
+    std::size_t m_id;
+    explicit event_slot(std::size_t id) : m_id { id } { }
+    std::size_t id() const { return m_id; }
+
+public:
+    event_slot() noexcept : m_id { 0 } { };
+    bool empty() const { return (m_id == 0); }
+};
+
+template <typename Proto>
+class scoped_event_slot;
+template <typename Result, typename... Args>
+class scoped_event_slot<Result (Args...)> final : private boost::noncopyable
+{
+private:
+    event_slot m_slot;
+    detail::event_base<Result, Args...>* m_ptr_evt;
+
+    void destroy();
+
+public:
+    scoped_event_slot() noexcept;
+
+    template <typename Invoker>
+    explicit scoped_event_slot(event<Result (Args...), Invoker>& evt, const event_slot& s = { }) noexcept;
+
+    ~scoped_event_slot();
+
+    scoped_event_slot(scoped_event_slot&& other) noexcept;
+    scoped_event_slot& operator =(scoped_event_slot&& other) noexcept;
+    void swap(scoped_event_slot& other) noexcept;
+
+    const event_slot& get() const;
+    event_slot release();
+};
+
+
+// event & detail::event_base implementation
+namespace detail
+{
+    template <typename Result, typename ...Args>
+    class event_base : private boost::noncopyable
+    {
+        template <typename Proto, typename Invoker>
+        friend class ::iwl::event;
+
+    public:
+        using fn_type = Result (Args...);
+        using fn_obj_type = std::function<fn_type>;
+
+        using slot = event_slot;
+        using scoped_slot = scoped_event_slot<Result (Args...)>;
+
+    private:
+        struct fn_node
+        {
+            fn_node* prev;
+            fn_node* next;
+            bool removed;
+            bool just_added;
+            bool emiting; // only valid if this == m_lst
+            fn_obj_type fn;
+
+            fn_node() = default;
+            template <typename U>
+            explicit fn_node(U&& u) : fn { std::forward<U>(u) } { }
+        };
+
+        fn_node* m_lst = nullptr;
+
+        void destroy()
+        {
+            fn_node* node = m_lst;
+            if (!node)
+                return;
+
+            assert(!m_lst->emiting && "destroying event object while emit()");
+
+            do
+            {
+                fn_node* after = node->next;
+                delete node;
+                node = after;
+            }
+            while (node != m_lst);
+
+            m_lst = nullptr;
+        }
+
+        bool is_emitting() const
+        {
+            return (m_lst && m_lst->emiting);
+        }
+
+        event_base() = default;
+        ~event_base() { destroy(); }
+
+        event_base(event_base&& other) noexcept
+            : m_lst { other.m_lst }
+        {
+            assert(!other.is_emitting() && "moving event object while emit()");
+
+            other.m_lst = nullptr;
+        }
+        event_base& operator =(event_base&& other) noexcept
+        {
+            assert(!other.is_emitting() && "moving event object while emit()");
+
+            destroy();
+            m_lst = other.m_lst;
+            other.m_lst = nullptr;
+            return *this;
+        }
+
+    public:
+        void swap(event_base& other) noexcept
+        {
+            assert(!is_emitting() && "swapping event object while emit()");
+            assert(!other.is_emitting() && "swapping event object while emit()");
+
+            using std::swap;
+            swap(m_lst, other.m_lst);
+        }
+
+        template <typename F>
+        slot add(F&& fn)
+        {
+            return add_scoped(std::forward<F>(fn)).release();
+        }
+
+        template <typename F>
+        scoped_slot add_scoped(F&& fn)
+        {
+            fn_node* item = new fn_node { std::forward<F>(fn) };
+
+            if (!m_lst)
+            {
+                item->prev = item;
+                item->next = item;
+                item->removed = false;
+                item->just_added = false;
+                item->emiting = false;
+                m_lst = item;
+            }
+            else
+            {
+                item->prev = m_lst->prev;
+                item->next = m_lst;
+                item->removed = false;
+                item->just_added = m_lst->emiting;
+                item->emiting = false;
+
+                m_lst->prev->next = item;
+                m_lst->prev = item;
+            }
+
+            return scoped_slot { *this, slot { reinterpret_cast<std::size_t>(item) } };
+        }
+
+        bool remove(const slot& s)
+        {
+            if (!m_lst)
                 return false;
-        });
-    _m_lst_fn_removable.erase(it, _m_lst_fn_removable.end());
 
-    if (!succeeded)
-        throw std::invalid_argument("'fn' of iwl::event<>::operator -=()");
+            if (m_lst == reinterpret_cast<std::size_t>(slot.id()))
+            {
+                if (m_lst->emiting)
+                {
+                    if (m_lst->removed)
+                        return false;
+                    m_lst->removed = true;
+                }
+                else
+                {
+                    delete m_lst;
+                    m_lst = nullptr;
+                }
+                return true;
+            }
+            else
+            {
+                fn_node* node = m_lst->next;
+                while (node != m_lst)
+                {
+                    if (node == reinterpret_cast<std::size_t>(slot.id()))
+                    {
+                        if (node->emiting)
+                        {
+                            if (node->removed)
+                                return false;
+                            node->removed = true;
+                        }
+                        else
+                        {
+                            node->prev->next = node->next;
+                            node->next->prev = node->prev;
+                            delete node;
+                        }
+                        return true;
+                    }
+                    node = node->next;
+                }
+                return false;
+            }
+        }
 
+        bool remove(scoped_slot& s)
+        {
+            bool ret = remove(s.get());
+            if (ret)
+                s.release();
+            return ret;
+        }
+
+        bool empty() const
+        {
+            return (m_lst == nullptr);
+        }
+    };
+}
+
+template <typename Invoker, typename Result, typename ...Args>
+class event<Result (Args...), Invoker> final : public detail::event_base<Result, Args...>
+{
+public:
+    template <typename ...Args2>
+    auto emit(Args2&&... args)
+        -> std::remove_reference_t<std::result_of_t<decltype(&Invoker::result)()>>
+    {
+        Invoker invoker;
+
+        if (m_lst)
+        {
+            m_lst->emiting = true;
+
+            fn_node* node = m_lst;
+            do
+            {
+                if (node->removed || node->just_added)
+                    continue;
+
+                if (!invoker(node->fn, std::forward<Args2>(args)...))
+                    break;
+
+                node = node->next;
+            }
+            while (node != m_lst);
+
+            node = m_lst;
+            do
+            {
+                if (node->just_added)
+                {
+                    node->just_added = false;
+                }
+                else if (node->removed)
+                {
+                    if (node->prev == node)
+                    {
+                        m_lst = nullptr;
+                        delete node;
+                        break;
+                    }
+                    else
+                    {
+                        node->prev->next = node->next;
+                        node->next->prev = node->prev;
+                        if (node == m_lst)
+                            m_lst = node->next;
+                        delete node;
+                    }
+                }
+            }
+            while (node != m_lst);
+        }
+
+        return invoker.result();
+    }
+};
+
+template <typename Proto, typename Invoker>
+void swap(event<Proto, Invoker>& a, event<Proto, Invoker>& b)
+{
+    a.swap(b);
+}
+
+// scoped_event_slot implementation
+
+void scoped_event_slot::destroy()
+{
+    if (!m_slot.empty())
+        m_ptr_evt->remove(m_slot);
+}
+
+scoped_event_slot::scoped_event_slot() noexcept
+    : m_ptr_evt { nullptr }, m_slot { } { }
+scoped_event_slot::scoped_event_slot(event& evt, const event_slot& s = { }) noexcept
+    : m_ptr_evt { &evt }, m_slot { s } { }
+
+scoped_event_slot::~scoped_event_slot()
+{
+    destroy();
+}
+
+scoped_event_slot::scoped_event_slot(scoped_event_slot&& other) noexcept
+    : m_ptr_evt { other.m_ptr_evt }, m_slot { other.m_slot }
+{
+    other.m_ptr_evt = nullptr;
+    other.m_slot = event_slot { };
+}
+scoped_event_slot& scoped_event_slot::operator =(scoped_event_slot&& other) noexcept
+{
+    destroy();
+    m_slot = other.m_slot;
+    other.m_slot = event_slot { };
+    m_ptr_evt = other.m_ptr_evt;
+    other.m_ptr_evt = nullptr;
     return *this;
+}
+void scoped_event_slot::swap(scoped_event_slot& other) noexcept
+{
+    using std::swap;
+    swap(m_slot, other.m_slot);
+    swap(m_ptr_evt, other.m_ptr_evt);
+}
+void swap(scoped_event_slot& a, scoped_event_slot& b) noexcept
+{
+    a.swap(b);
+}
+
+const event_slot& scoped_event_slot::get() const
+{
+    return m_slot;
+}
+event_slot scoped_event_slot::release()
+{
+    slot s = m_slot;
+    m_ptr_evt = nullptr;
+    m_slot = event_slot { };
+    return s;
 }
 
 END_IWL()

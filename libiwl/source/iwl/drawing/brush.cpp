@@ -26,84 +26,70 @@
 #include "iwl/drawing/brush.hpp"
 
 #include <gdiplus.h>
+#include "gdiutil.h"
 
 BEGIN_IWL()
 
-brush::~brush() = default;
-
-struct solid_brush::impl
+brush::~brush()
 {
-    Gdiplus::SolidBrush _brush;
-};
+    delete reinterpret_cast<Gdiplus::Brush*>(m_native);
+}
 
-solid_brush::~solid_brush()
+solid_brush::solid_brush(const color& c)
 {
-
+    auto pbrush = new Gdiplus::SolidBrush(util::gdi_color(c));
+    m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void solid_brush::swap(solid_brush& other) noexcept
 {
-    m_pimpl.swap(other.m_pimpl);
+    m_native.swap(other.m_native);
 }
 
-struct hatch_brush::impl
+hatch_brush::hatch_brush(style st, const color& fore, const color& back)
 {
-    Gdiplus::HatchBrush _brush;
-};
-
-hatch_brush::~hatch_brush()
-{
-
+    auto pbrush = new Gdiplus::HatchBrush(
+        static_cast<Gdiplus::HatchStyle>(st),
+        util::gdicolor(fore),
+        util::gdicolor(back));
+    m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void hatch_brush::swap(hatch_brush& other) noexcept
 {
-    m_pimpl.swap(other.m_pimpl);
+    m_native.swap(other.m_native);
 }
-
-struct linear_gradient_brush::impl
-{
-    Gdiplus::LinearGradientBrush _brush;
-};
-
-linear_gradient_brush::~linear_gradient_brush()
+/*
+linear_gradient_brush::linear_gradient_brush()
 {
 
 }
 
 void linear_gradient_brush::swap(linear_gradient_brush& other) noexcept
 {
-    m_pimpl.swap(other.m_pimpl);
+    m_native.swap(other.m_native);
 }
 
-struct path_gradient_brush::impl
+path_gradient_brush::path_gradient_brush(asdf)
 {
-    Gdiplus::PathGradientBrush _brush;
-};
-
-path_gradient_brush::~path_gradient_brush()
-{
-
+    auto pbrush = new Gdiplus::PathGradientBrush(asdf);
+    m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void path_gradient_brush::swap(path_gradient_brush& other) noexcept
 {
-    m_pimpl.swap(other.m_pimpl);
+    m_native.swap(other.m_native);
 }
 
-struct texture_brush::impl
+texture_brush::texture_brush(asdf)
 {
-    Gdiplus::TextureBrush _brush;
-};
-
-texture_brush::~texture_brush()
-{
-
+    auto pbrush = new Gdiplus::TextureBrush(asdf);
+    m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void texture_brush::swap(texture_brush& other) noexcept
 {
-    m_pimpl.swap(other.m_pimpl);
+    m_native.swap(other.m_native);
 }
-
+*/
 END_IWL()

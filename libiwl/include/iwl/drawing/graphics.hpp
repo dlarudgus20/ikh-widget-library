@@ -60,11 +60,7 @@ public:
     void swap(graphics& other) noexcept;
 };
 
-namespace std
-{
-    template <>
-    void swap(graphics& a, graphics& b) noexcept { a.swap(b); }
-}
+inline void swap(graphics& a, graphics& b) noexcept { a.swap(b); }
 
 END_IWL()
 

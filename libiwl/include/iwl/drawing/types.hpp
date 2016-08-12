@@ -36,7 +36,8 @@ struct point
 
 struct rectangle
 {
-    point p1, p2;
+    float x, y;
+    float width, height;
 };
 
 END_IWL()

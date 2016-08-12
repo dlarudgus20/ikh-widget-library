@@ -22,58 +22,31 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/widget/form.hpp"
-#include "iwl/drawing/graphics.hpp"
+#ifndef GDIUTIL_H_
+#define GDIUTIL_H_
 
-BEGIN_IWL()
+#include "iwl/defines.hpp"
+#include "iwl/drawing/types.hpp"
+#include "iwl/drawing/color.hpp"
 
-form::form(const form_style& style /* = { } */)
-    : widget { *this }
+#include <gdiplus.h>
+
+namespace util
 {
-    auto proc = [this](auto&& args) { return this->wndproc(args); };
+    Gdiplus::PointF gdi_pointf(const iwl::point& p)
+    {
+        return Gdiplus::PointF { p.x, p.y };
+    }
 
-    const char* errmsg;
-    if (!m_wnd.create(proc, errmsg))
-        throw form_creation_error(errmsg);
-}
+    Gdiplus::RectF gdi_rectf(const iwl::rectangle& rt)
+    {
+        return Gdiplus::RectF { rt.x, rt.y, rt.width, rt.height };
+    }
 
-void form::show()
-{
-    m_wnd.show();
-}
+    Gdiplus::Color gdi_color(const iwl::color& c)
+    {
+        return Gdiplus::Color { static_cast<Gdiplus::ARGB>(c.argb()) };
+    }
+};
 
-bedrock::window& form::bedrock()
-{
-    return m_wnd;
-}
-
-const bedrock::window& form::bedrock() const
-{
-    return m_wnd;
-}
-
-bedrock::wndproc_result form::wndproc(bedrock::wndproc_args& args)
-{
-    return boost::apply_visitor(
-        [this](auto& args) { return this->wndproc_handler(args); },
-        args);
-}
-
-bedrock::wndproc_result form::wndproc_handler(bedrock::load_args& args)
-{
-    bool succeeded = true;
-    on_load.emit(succeeded);
-    if (succeeded)
-        return bedrock::wndproc_result::succeeded;
-    else
-        return bedrock::wndproc_result::failed;
-}
-
-bedrock::wndproc_result form::wndproc_handler(bedrock::paint_args& args)
-{
-    on_paint.emit(args.g);
-    return bedrock::wndproc_result::succeeded;
-}
-
-END_IWL()
+#endif // GDIUTIL_H_

@@ -33,9 +33,24 @@ BEGIN_IWL()
 class form;
 class graphics;
 
+namespace detail
+{
+    struct onload_invoker
+    {
+        template <typename ...Args>
+        bool operator ()(const std::function<void (bool&)>& fn, bool& succeeded)
+        {
+            fn(succeeded);
+            return succeeded;
+        }
+        void result() { }
+    };
+}
+
 class widget : private boost::noncopyable
 {
     friend form;
+
 private:
     form& m_frm;
 
@@ -47,12 +62,8 @@ public:
 
     form& parent_form() const;
 
-    event<widget, void (bool& succeeded)> on_load;
-    event<widget, void (graphics& g)> on_paint;
-
-private:
-    bool fire_load();
-    void fire_paint(graphics& g);
+    event<void (bool& succeeded), detail::onload_invoker> on_load;
+    event<void (graphics& g)> on_paint;
 };
 
 END_IWL()

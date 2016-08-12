@@ -38,7 +38,7 @@ class drawing : private boost::noncopyable
 {
 private:
     widget& m_wd;
-    event_slot<void (graphics& g)> m_slot;
+    event<void (graphics& g)> m_slot;
 
 public:
     explicit drawing(widget& wd);
