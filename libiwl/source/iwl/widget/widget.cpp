@@ -41,4 +41,18 @@ form& widget::parent_form() const
     return m_frm;
 }
 
+const ::iwl::size& widget::size() const
+{
+    return m_size;
+}
+
+void widget::size(const ::iwl::size& sz)
+{
+    m_size = sz;
+    size_changed(m_size);
+    on_size.emit(m_size);
+}
+
+void widget::size_changed(const ::iwl::size& sz) { }
+
 END_IWL()

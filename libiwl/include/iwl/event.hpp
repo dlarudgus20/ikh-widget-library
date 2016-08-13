@@ -37,7 +37,7 @@ template <typename Result, typename... Args>
 struct event_invoker_last<Result (Args...)>
 {
     template <typename ...Args2>
-    bool operator ()(const std::function<Result (Args2...)>& fn, Args2&&... args)
+    bool operator ()(const std::function<Result (Args...)>& fn, Args2&&... args)
     {
         m_rs = fn(std::forward<Args2>(args)...);
         return true;
@@ -53,7 +53,7 @@ template <typename... Args>
 struct event_invoker_last<void (Args...)>
 {
     template <typename... Args2>
-    bool operator ()(const std::function<void (Args2...)>& fn, Args2&&... args)
+    bool operator ()(const std::function<void (Args...)>& fn, Args2&&... args)
     {
         fn(std::forward<Args2>(args)...);
         return true;

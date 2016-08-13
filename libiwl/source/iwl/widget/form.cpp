@@ -25,17 +25,24 @@
 #include "pch.h"
 #include "iwl/widget/form.hpp"
 #include "iwl/drawing/graphics.hpp"
+#include "iwl/drawing/brush.hpp"
 
 BEGIN_IWL()
 
 form::form(const form_style& style /* = { } */)
     : widget { *this }
 {
-    auto proc = [this](auto&& args) { return this->wndproc(args); };
+    auto proc = [this](auto&& args) {
+        return boost::apply_visitor(
+            [this](auto& args) { return this->wndproc_handler(args); },
+            args);
+    };
 
     const char* errmsg;
     if (!m_wnd.create(proc, errmsg))
         throw form_creation_error(errmsg);
+
+    m_ptr_background = &brushes::green();
 }
 
 void form::show()
@@ -47,17 +54,18 @@ bedrock::window& form::bedrock()
 {
     return m_wnd;
 }
-
 const bedrock::window& form::bedrock() const
 {
     return m_wnd;
 }
 
-bedrock::wndproc_result form::wndproc(bedrock::wndproc_args& args)
+void form::background(const brush& b)
 {
-    return boost::apply_visitor(
-        [this](auto& args) { return this->wndproc_handler(args); },
-        args);
+    m_ptr_background = &b;
+}
+const brush& form::background() const
+{
+    return *m_ptr_background;
 }
 
 bedrock::wndproc_result form::wndproc_handler(bedrock::load_args& args)
@@ -72,8 +80,24 @@ bedrock::wndproc_result form::wndproc_handler(bedrock::load_args& args)
 
 bedrock::wndproc_result form::wndproc_handler(bedrock::paint_args& args)
 {
+    auto sz = m_wnd.size();
+    args.g.fill_rectangle(rectangle { 0, 0, sz.width, sz.height }, *m_ptr_background);
     on_paint.emit(args.g);
     return bedrock::wndproc_result::succeeded;
+}
+
+bedrock::wndproc_result form::wndproc_handler(bedrock::size_args& args)
+{
+    size(args.size);
+    return bedrock::wndproc_result::succeeded;
+}
+
+void form::size_changed(const ::iwl::size& sz)
+{
+    if (m_wnd.size() != sz)
+    {
+        m_wnd.size(sz);
+    }
 }
 
 END_IWL()

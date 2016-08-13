@@ -33,6 +33,8 @@
 
 BEGIN_IWL()
 
+class brush;
+
 namespace detail
 {
     struct native_window_handle_impl { };
@@ -55,6 +57,8 @@ class form : public widget
 private:
     bedrock::window m_wnd;
 
+    const brush* m_ptr_background;
+
 public:
     explicit form(const form_style& style = { });
     void show();
@@ -62,11 +66,15 @@ public:
     bedrock::window& bedrock();
     const bedrock::window& bedrock() const;
 
-private:
-    bedrock::wndproc_result wndproc(bedrock::wndproc_args& args);
+    void background(const brush& b);
+    const brush& background() const;
 
+private:
     bedrock::wndproc_result wndproc_handler(bedrock::load_args& args);
     bedrock::wndproc_result wndproc_handler(bedrock::paint_args& args);
+    bedrock::wndproc_result wndproc_handler(bedrock::size_args& args);
+
+    virtual void size_changed(const ::iwl::size& sz) override;
 };
 
 END_IWL()

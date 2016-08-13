@@ -26,8 +26,7 @@
 #include "iwl/bedrock/draw_context.hpp"
 #include "iwl/bedrock/window.hpp"
 
-#include <windows.h>
-#include <gdiplus.h>
+#include "gdiutil.h"
 
 namespace
 {

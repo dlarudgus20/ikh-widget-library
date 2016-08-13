@@ -25,7 +25,7 @@
 #include "pch.h"
 #include "iwl/bedrock/window.hpp"
 
-#include <windows.h>
+#include "gdiutil.h"
 
 BEGIN_IWL()
 
@@ -95,8 +95,31 @@ namespace bedrock
 
     graphics window::create_graphics()
     {
-        HDC hdc = ::GetDC(reinterpret_cast<HWND>(m_wnd));
-        return graphics::from_handle(reinterpret_cast<native_graphics_handle>(hdc));
+        HWND hWnd = reinterpret_cast<HWND>(m_wnd);
+        std::unique_ptr<Gdiplus::Graphics> pg { new Gdiplus::Graphics { hWnd } };
+        graphics ret { reinterpret_cast<native_graphics_handle>(pg.get()) };
+        pg.release();
+        return ret;
+    }
+
+    const ::iwl::size window::size() const
+    {
+        RECT rt;
+        ::GetClientRect(reinterpret_cast<HWND>(m_wnd), &rt);
+        return ::iwl::size { static_cast<float>(rt.right), static_cast<float>(rt.bottom) };
+    }
+
+    void window::size(::iwl::size sz)
+    {
+        HWND hWnd = reinterpret_cast<HWND>(m_wnd);
+
+        RECT rt;
+        ::GetWindowRect(hWnd, &rt);
+        rt.right = rt.left + static_cast<LONG>(sz.width);
+        rt.bottom = rt.top + static_cast<LONG>(sz.height);
+
+        ::AdjustWindowRect(&rt, ::GetWindowLongPtrW(hWnd, GWL_STYLE), FALSE);
+        ::MoveWindow(hWnd, rt.left, rt.top, rt.right, rt.bottom, TRUE);
     }
 
     native_window_handle window::native_handle() const
@@ -138,12 +161,17 @@ namespace bedrock
                 {
                     ::BeginPaint(hWnd, &ps);
                     native_graphics_handle handle = reinterpret_cast<native_graphics_handle>(ps.hdc);
-                    paint_args args = { graphics::from_handle(handle) };
-                    wa = std::move(args);
+                    std::unique_ptr<Gdiplus::Graphics> pg { new Gdiplus::Graphics { ps.hdc } };
+                    graphics g { reinterpret_cast<native_graphics_handle>(pg.get()) };
+                    wa = paint_args { std::move(g) };
                     wndproc(wa);
                     ::EndPaint(hWnd, &ps);
                     return 0;
                 }
+            case WM_SIZE:
+                wa = size_args { ptr_wnd->size() };
+                wndproc(wa);
+                return 0;
             case WM_NCDESTROY:
                 ptr_wnd->m_draw_context.deinitialize();
                 return 0;

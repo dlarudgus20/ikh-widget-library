@@ -27,6 +27,7 @@
 
 #include "../defines.hpp"
 #include "../event.hpp"
+#include "../drawing/types.hpp"
 
 BEGIN_IWL()
 
@@ -49,10 +50,9 @@ namespace detail
 
 class widget : private boost::noncopyable
 {
-    friend form;
-
 private:
     form& m_frm;
+    ::iwl::size m_size;
 
 protected:
     explicit widget(form& frm);
@@ -61,9 +61,15 @@ public:
     virtual ~widget() = 0;
 
     form& parent_form() const;
+    const ::iwl::size& size() const;
+    void size(const ::iwl::size& sz);
 
     event<void (bool& succeeded), detail::onload_invoker> on_load;
     event<void (graphics& g)> on_paint;
+    event<void (const ::iwl::size& sz)> on_size;
+
+private:
+    virtual void size_changed(const ::iwl::size& sz);
 };
 
 END_IWL()

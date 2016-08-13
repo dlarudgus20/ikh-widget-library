@@ -26,8 +26,8 @@
 #define IWL_DRAWING_GRAPHICS_HPP_
 
 #include "../defines.hpp"
-#include "../event.hpp"
 #include "types.hpp"
+#include "brush.hpp"
 
 BEGIN_IWL()
 
@@ -46,21 +46,30 @@ using native_graphics_handle = detail::native_graphics_handle_impl*;
 class graphics : private boost::noncopyable
 {
     friend bedrock::window;
+
 private:
     native_graphics_handle m_handle;
 
-    graphics() = default;
-    static graphics from_handle(native_graphics_handle handle);
+    void destroy();
+
+    explicit graphics(native_graphics_handle handle);
 
 public:
+    ~graphics();
+
     static graphics from_widget(widget& wd);
 
-    graphics(graphics&& other);
-    graphics& operator =(graphics&& other);
+    graphics(graphics&& other) noexcept;
+    graphics& operator =(graphics&& other) noexcept;
     void swap(graphics& other) noexcept;
+
+    void fill_rectangle(const rectangle& rt, const brush& b);
 };
 
-inline void swap(graphics& a, graphics& b) noexcept { a.swap(b); }
+inline void swap(graphics& a, graphics& b) noexcept
+{
+    a.swap(b);
+}
 
 END_IWL()
 

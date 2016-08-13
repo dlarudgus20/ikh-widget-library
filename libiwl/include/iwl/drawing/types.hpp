@@ -33,12 +33,42 @@ struct point
 {
     float x, y;
 };
+inline bool operator ==(const point& lhs, const point& rhs)
+{
+    return (lhs.x == rhs.x && lhs.y == rhs.y);
+}
+inline bool operator !=(const point& lhs, const point& rhs)
+{
+    return !(lhs == rhs);
+}
+
+struct size
+{
+    float width, height;
+};
+inline bool operator ==(const size& lhs, const size& rhs)
+{
+    return (lhs.width == rhs.width && lhs.height == rhs.height);
+}
+inline bool operator !=(const size& lhs, const size& rhs)
+{
+    return !(lhs == rhs);
+}
 
 struct rectangle
 {
     float x, y;
     float width, height;
 };
+inline bool operator ==(const rectangle& lhs, const rectangle& rhs)
+{
+    return (lhs.x == rhs.x && lhs.y == rhs.y
+        && lhs.width == rhs.width && lhs.height == rhs.height);
+}
+inline bool operator !=(const rectangle& lhs, const rectangle& rhs)
+{
+    return !(lhs == rhs);
+}
 
 END_IWL()
 

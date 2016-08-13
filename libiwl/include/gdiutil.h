@@ -29,21 +29,22 @@
 #include "iwl/drawing/types.hpp"
 #include "iwl/drawing/color.hpp"
 
+#include <windows.h>
 #include <gdiplus.h>
 
-namespace util
+namespace gdiutil
 {
-    Gdiplus::PointF gdi_pointf(const iwl::point& p)
+    inline Gdiplus::PointF gdi_pointf(const iwl::point& p)
     {
         return Gdiplus::PointF { p.x, p.y };
     }
 
-    Gdiplus::RectF gdi_rectf(const iwl::rectangle& rt)
+    inline Gdiplus::RectF gdi_rectf(const iwl::rectangle& rt)
     {
         return Gdiplus::RectF { rt.x, rt.y, rt.width, rt.height };
     }
 
-    Gdiplus::Color gdi_color(const iwl::color& c)
+    inline Gdiplus::Color gdi_color(const iwl::color& c)
     {
         return Gdiplus::Color { static_cast<Gdiplus::ARGB>(c.argb()) };
     }

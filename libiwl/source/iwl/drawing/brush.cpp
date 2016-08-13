@@ -25,7 +25,6 @@
 #include "pch.h"
 #include "iwl/drawing/brush.hpp"
 
-#include <gdiplus.h>
 #include "gdiutil.h"
 
 BEGIN_IWL()
@@ -35,29 +34,36 @@ brush::~brush()
     delete reinterpret_cast<Gdiplus::Brush*>(m_native);
 }
 
+native_brush_handle brush::native_handle() const
+{
+    return m_native;
+}
+
 solid_brush::solid_brush(const color& c)
 {
-    auto pbrush = new Gdiplus::SolidBrush(util::gdi_color(c));
+    auto pbrush = new Gdiplus::SolidBrush(gdiutil::gdi_color(c));
     m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void solid_brush::swap(solid_brush& other) noexcept
 {
-    m_native.swap(other.m_native);
+    using std::swap;
+    swap(m_native, other.m_native);
 }
 
 hatch_brush::hatch_brush(style st, const color& fore, const color& back)
 {
     auto pbrush = new Gdiplus::HatchBrush(
         static_cast<Gdiplus::HatchStyle>(st),
-        util::gdicolor(fore),
-        util::gdicolor(back));
+        gdiutil::gdi_color(fore),
+        gdiutil::gdi_color(back));
     m_native = reinterpret_cast<native_brush_handle>(pbrush);
 }
 
 void hatch_brush::swap(hatch_brush& other) noexcept
 {
-    m_native.swap(other.m_native);
+    using std::swap;
+    swap(m_native, other.m_native);
 }
 /*
 linear_gradient_brush::linear_gradient_brush()
@@ -67,7 +73,8 @@ linear_gradient_brush::linear_gradient_brush()
 
 void linear_gradient_brush::swap(linear_gradient_brush& other) noexcept
 {
-    m_native.swap(other.m_native);
+    using std::swap;
+    swap(m_native, other.m_native);
 }
 
 path_gradient_brush::path_gradient_brush(asdf)
@@ -78,7 +85,8 @@ path_gradient_brush::path_gradient_brush(asdf)
 
 void path_gradient_brush::swap(path_gradient_brush& other) noexcept
 {
-    m_native.swap(other.m_native);
+    using std::swap;
+    swap(m_native, other.m_native);
 }
 
 texture_brush::texture_brush(asdf)

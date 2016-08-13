@@ -27,18 +27,39 @@
 #include "iwl/widget/widget.hpp"
 #include "iwl/widget/form.hpp"
 
-#include <windows.h>
+#include "gdiutil.h"
 
 BEGIN_IWL()
 
-graphics::graphics(graphics&& other)
+graphics graphics::from_widget(widget& wd)
+{
+    return wd.parent_form().bedrock().create_graphics();
+}
+
+graphics::graphics(native_graphics_handle handle)
+    : m_handle { handle }
+{
+}
+
+graphics::~graphics()
+{
+    destroy();
+}
+
+void graphics::destroy()
+{
+    delete reinterpret_cast<Gdiplus::Graphics*>(m_handle);
+}
+
+graphics::graphics(graphics&& other) noexcept
 {
     m_handle = other.m_handle;
     other.m_handle = nullptr;
 }
 
-graphics& graphics::operator =(graphics&& other)
+graphics& graphics::operator =(graphics&& other) noexcept
 {
+    destroy();
     m_handle = other.m_handle;
     other.m_handle = nullptr;
     return *this;
@@ -46,19 +67,15 @@ graphics& graphics::operator =(graphics&& other)
 
 void graphics::swap(graphics& other) noexcept
 {
-    std::swap(m_handle, other.m_handle);
+    using std::swap;
+    swap(m_handle, other.m_handle);
 }
 
-graphics graphics::from_handle(native_graphics_handle handle)
+void graphics::fill_rectangle(const rectangle& rt, const brush& b)
 {
-    graphics g;
-    g.m_handle = handle;
-    return g;
-}
-
-graphics graphics::from_widget(widget& wd)
-{
-    return wd.parent_form().bedrock().create_graphics();
+    auto pg = reinterpret_cast<Gdiplus::Graphics*>(m_handle);
+    auto pb = reinterpret_cast<Gdiplus::Brush*>(b.native_handle());
+    pg->FillRectangle(pb, gdiutil::gdi_rectf(rt));
 }
 
 END_IWL()

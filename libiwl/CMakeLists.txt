@@ -31,14 +31,15 @@ conan_basic_setup()
 add_definitions(-DUNICODE)
 
 add_library(libiwl
-    source/pch.cpp
-    source/iwl/thread.cpp
-    source/iwl/widget/form.cpp
-    source/iwl/widget/widget.cpp
-    source/iwl/bedrock/window.cpp
     source/iwl/bedrock/draw_context.cpp
+    source/iwl/bedrock/window.cpp
+    source/iwl/drawing/brush.cpp
     source/iwl/drawing/drawing.cpp
     source/iwl/drawing/graphics.cpp
+    source/iwl/widget/form.cpp
+    source/iwl/widget/widget.cpp
+    source/iwl/thread.cpp
+    source/pch.cpp
 )
 
 target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

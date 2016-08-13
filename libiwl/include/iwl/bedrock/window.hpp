@@ -40,13 +40,6 @@ namespace bedrock
     }
     using native_window_handle = detail::native_window_handle_impl*;
 
-    class form_creation_error : public std::runtime_error
-    {
-    public:
-        explicit form_creation_error(const std::string& msg)
-            : std::runtime_error { msg } { }
-    };
-
     enum wndproc_result
     {
         succeeded,
@@ -58,13 +51,20 @@ namespace bedrock
     {
         graphics g;
     };
+    struct size_args
+    {
+        ::iwl::size size;
+    };
     using wndproc_args = boost::variant<
         load_args,
-        paint_args>;
+        paint_args,
+        size_args>;
 
     class window : private boost::noncopyable
     {
+    public:
         using wndproc_t = std::function<wndproc_result (wndproc_args&)>;
+
     private:
         native_window_handle m_wnd = nullptr;
         draw_context m_draw_context;
@@ -76,6 +76,9 @@ namespace bedrock
         void show();
 
         graphics create_graphics();
+
+        const ::iwl::size size() const;
+        void size(::iwl::size sz);
 
         native_window_handle native_handle() const;
 
