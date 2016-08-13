@@ -33,7 +33,7 @@ BEGIN_IWL()
 
 template <typename Proto>
 struct event_invoker_last;
-template <typename Result, typename ...Args>
+template <typename Result, typename... Args>
 struct event_invoker_last<Result (Args...)>
 {
     template <typename ...Args2>
@@ -49,10 +49,10 @@ struct event_invoker_last<Result (Args...)>
 private:
     Result m_rs { }; // initialize by default value
 };
-template <typename ...Args>
+template <typename... Args>
 struct event_invoker_last<void (Args...)>
 {
-    template <typename ...Args2>
+    template <typename... Args2>
     bool operator ()(const std::function<void (Args2...)>& fn, Args2&&... args)
     {
         fn(std::forward<Args2>(args)...);
@@ -75,15 +75,18 @@ namespace detail
 
 class event_slot final
 {
-    template <typename Proto, typename Invoker>
-    friend class event;
-
 private:
     std::size_t m_id;
-    explicit event_slot(std::size_t id) : m_id { id } { }
-    std::size_t id() const { return m_id; }
 
 public:
+    static event_slot from_id(std::size_t id)
+    {
+        event_slot s;
+        s.m_id = id;
+        return s;
+    }
+    std::size_t id() const { return m_id; }
+
     event_slot() noexcept : m_id { 0 } { };
     bool empty() const { return (m_id == 0); }
 };
@@ -101,9 +104,11 @@ private:
 
 public:
     scoped_event_slot() noexcept;
+    explicit scoped_event_slot(detail::event_base<Result, Args...>& evt, const event_slot& s = { }) noexcept;
 
     template <typename Invoker>
-    explicit scoped_event_slot(event<Result (Args...), Invoker>& evt, const event_slot& s = { }) noexcept;
+    explicit scoped_event_slot(event<Result (Args...), Invoker>& evt, const event_slot& s = { }) noexcept
+        : scoped_event_slot { static_cast<detail::event_base<Result (Args...)>&>(evt), s } { }
 
     ~scoped_event_slot();
 
@@ -119,12 +124,9 @@ public:
 // event & detail::event_base implementation
 namespace detail
 {
-    template <typename Result, typename ...Args>
+    template <typename Result, typename... Args>
     class event_base : private boost::noncopyable
     {
-        template <typename Proto, typename Invoker>
-        friend class ::iwl::event;
-
     public:
         using fn_type = Result (Args...);
         using fn_obj_type = std::function<fn_type>;
@@ -132,7 +134,7 @@ namespace detail
         using slot = event_slot;
         using scoped_slot = scoped_event_slot<Result (Args...)>;
 
-    private:
+    protected:
         struct fn_node
         {
             fn_node* prev;
@@ -235,7 +237,7 @@ namespace detail
                 m_lst->prev = item;
             }
 
-            return scoped_slot { *this, slot { reinterpret_cast<std::size_t>(item) } };
+            return scoped_slot { *this, slot::from_id(reinterpret_cast<std::size_t>(item)) };
         }
 
         bool remove(const slot& s)
@@ -243,7 +245,7 @@ namespace detail
             if (!m_lst)
                 return false;
 
-            if (m_lst == reinterpret_cast<std::size_t>(slot.id()))
+            if (reinterpret_cast<std::size_t>(m_lst) == s.id())
             {
                 if (m_lst->emiting)
                 {
@@ -263,7 +265,7 @@ namespace detail
                 fn_node* node = m_lst->next;
                 while (node != m_lst)
                 {
-                    if (node == reinterpret_cast<std::size_t>(slot.id()))
+                    if (reinterpret_cast<std::size_t>(node) == s.id())
                     {
                         if (node->emiting)
                         {
@@ -300,13 +302,17 @@ namespace detail
     };
 }
 
-template <typename Invoker, typename Result, typename ...Args>
+template <typename Invoker, typename Result, typename... Args>
 class event<Result (Args...), Invoker> final : public detail::event_base<Result, Args...>
 {
+private:
+    using base_t = detail::event_base<Result, Args...>;
+    using base_t::m_lst;
+    using typename base_t::fn_node;
+
 public:
-    template <typename ...Args2>
+    template <typename... Args2>
     auto emit(Args2&&... args)
-        -> std::remove_reference_t<std::result_of_t<decltype(&Invoker::result)()>>
     {
         Invoker invoker;
 
@@ -367,29 +373,38 @@ void swap(event<Proto, Invoker>& a, event<Proto, Invoker>& b)
 
 // scoped_event_slot implementation
 
-void scoped_event_slot::destroy()
+template <typename Result, typename... Args>
+void scoped_event_slot<Result (Args...)>::destroy()
 {
     if (!m_slot.empty())
         m_ptr_evt->remove(m_slot);
 }
 
-scoped_event_slot::scoped_event_slot() noexcept
+template <typename Result, typename... Args>
+scoped_event_slot<Result (Args...)>::scoped_event_slot() noexcept
     : m_ptr_evt { nullptr }, m_slot { } { }
-scoped_event_slot::scoped_event_slot(event& evt, const event_slot& s = { }) noexcept
+
+template <typename Result, typename... Args>
+scoped_event_slot<Result (Args...)>::scoped_event_slot(
+    detail::event_base<Result, Args...>& evt, const event_slot& s /* = { } */) noexcept
     : m_ptr_evt { &evt }, m_slot { s } { }
 
-scoped_event_slot::~scoped_event_slot()
+template <typename Result, typename... Args>
+scoped_event_slot<Result (Args...)>::~scoped_event_slot()
 {
     destroy();
 }
 
-scoped_event_slot::scoped_event_slot(scoped_event_slot&& other) noexcept
+template <typename Result, typename... Args>
+scoped_event_slot<Result (Args...)>::scoped_event_slot(scoped_event_slot&& other) noexcept
     : m_ptr_evt { other.m_ptr_evt }, m_slot { other.m_slot }
 {
     other.m_ptr_evt = nullptr;
     other.m_slot = event_slot { };
 }
-scoped_event_slot& scoped_event_slot::operator =(scoped_event_slot&& other) noexcept
+
+template <typename Result, typename... Args>
+scoped_event_slot<Result (Args...)>& scoped_event_slot<Result (Args...)>::operator =(scoped_event_slot&& other) noexcept
 {
     destroy();
     m_slot = other.m_slot;
@@ -398,24 +413,31 @@ scoped_event_slot& scoped_event_slot::operator =(scoped_event_slot&& other) noex
     other.m_ptr_evt = nullptr;
     return *this;
 }
-void scoped_event_slot::swap(scoped_event_slot& other) noexcept
+
+template <typename Result, typename... Args>
+void scoped_event_slot<Result (Args...)>::swap(scoped_event_slot& other) noexcept
 {
     using std::swap;
     swap(m_slot, other.m_slot);
     swap(m_ptr_evt, other.m_ptr_evt);
 }
-void swap(scoped_event_slot& a, scoped_event_slot& b) noexcept
+
+template <typename Proto>
+void swap(scoped_event_slot<Proto>& a, scoped_event_slot<Proto>& b) noexcept
 {
     a.swap(b);
 }
 
-const event_slot& scoped_event_slot::get() const
+template <typename Result, typename... Args>
+const event_slot& scoped_event_slot<Result (Args...)>::get() const
 {
     return m_slot;
 }
-event_slot scoped_event_slot::release()
+
+template <typename Result, typename... Args>
+event_slot scoped_event_slot<Result (Args...)>::release()
 {
-    slot s = m_slot;
+    event_slot s = m_slot;
     m_ptr_evt = nullptr;
     m_slot = event_slot { };
     return s;

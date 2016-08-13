@@ -31,9 +31,9 @@ int main()
     iwl::form frm;
 
     iwl::drawing d { frm };
-    d.on_draw += [](iwl::graphics& g) {
+    d.on_draw.add([](iwl::graphics& g) {
         std::puts("drawing asdf");
-    };
+    });
 
     frm.show();
     iwl::loop();

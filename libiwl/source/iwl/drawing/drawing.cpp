@@ -32,15 +32,15 @@ BEGIN_IWL()
 drawing::drawing(widget& wd)
     : m_wd { wd }
 {
-    m_wd.on_paint += m_slot.set([this](graphics& g) {
-        on_draw.fire(g);
+    m_slot = m_wd.on_paint.add_scoped([this](graphics& g) {
+        on_draw.emit(g);
     });
 }
 
 void drawing::draw()
 {
     graphics g = graphics::from_widget(m_wd);
-    on_draw.fire(g);
+    on_draw.emit(g);
 }
 
 END_IWL()
