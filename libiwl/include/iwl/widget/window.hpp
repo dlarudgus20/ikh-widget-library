@@ -22,72 +22,56 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_BEDROCK_WINDOW_HPP_
-#define IWL_BEDROCK_WINDOW_HPP_
+#ifndef IWL_WIDGET_WINDOW_HPP_
+#define IWL_WIDGET_WINDOW_HPP_
 
 #include "../defines.hpp"
-#include "../bedrock/draw_context.hpp"
+#include "fragment.hpp"
 #include "../drawing/graphics.hpp"
 #include "../drawing/types.hpp"
 
 BEGIN_IWL()
 
-namespace bedrock
+class brush;
+
+namespace detail
 {
-    namespace detail
-    {
-        struct native_window_handle_impl { };
-    }
-    using native_window_handle = detail::native_window_handle_impl*;
-
-    enum wndproc_result
-    {
-        succeeded,
-        failed,
-    };
-
-    struct load_args { };
-    struct paint_args
-    {
-        graphics g;
-    };
-    struct size_args
-    {
-        ::iwl::size size;
-    };
-    using wndproc_args = boost::variant<
-        load_args,
-        paint_args,
-        size_args>;
-
-    class window : private boost::noncopyable
-    {
-    public:
-        using wndproc_t = std::function<wndproc_result (wndproc_args&)>;
-
-    private:
-        native_window_handle m_wnd = nullptr;
-        draw_context m_draw_context;
-
-        wndproc_t m_wndproc;
-
-    public:
-        bool create(wndproc_t wndproc, const char*& errmsg);
-        void show();
-
-        graphics create_graphics();
-
-        const ::iwl::size size() const;
-        void size(::iwl::size sz);
-
-        native_window_handle native_handle() const;
-
-    private:
-        static std::uintptr_t __stdcall native_wndproc(
-            native_window_handle wnd, std::uint32_t iMsg, std::uintptr_t wParam, std::uintptr_t lParam);
-    };
+    struct native_window_handle_impl { };
 }
+using native_window_handle = detail::native_window_handle_impl*;
+
+class window_creation_error : public std::runtime_error
+{
+public:
+    explicit window_creation_error(const std::string& msg)
+        : std::runtime_error { msg } { }
+};
+
+struct window_style
+{
+};
+
+class window : public fragment
+{
+public:
+    window(const fragment_style& fstyle = { }, const window_style& wstyle = { });
+    void show();
+
+    const sizef& size() const override;
+    void size(const sizef& sz) override;
+
+    native_window_handle native_handle() const;
+
+private:
+    static std::uintptr_t __stdcall native_wndproc(
+        native_window_handle wnd, std::uint32_t iMsg, std::uintptr_t wParam, std::uintptr_t lParam);
+
+    native_window_handle m_wnd = nullptr;
+    bool m_created = false;
+
+    sizef m_size;
+};
 
 END_IWL()
 
-#endif // IWL_BEDROCK_WINDOW_HPP_
+#endif // IWL_WIDGET_WINDOW_HPP_

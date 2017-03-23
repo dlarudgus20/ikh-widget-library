@@ -31,8 +31,9 @@
 
 BEGIN_IWL()
 
-class form;
+class window;
 class graphics;
+class brush;
 
 namespace detail
 {
@@ -50,26 +51,35 @@ namespace detail
 
 class widget : private boost::noncopyable
 {
-private:
-    form& m_frm;
-    ::iwl::size m_size;
-
-protected:
-    explicit widget(form& frm);
+    friend window;
 
 public:
     virtual ~widget() = 0;
 
-    form& parent_form() const;
-    const ::iwl::size& size() const;
-    void size(const ::iwl::size& sz);
+    widget* parent() const;
+    void parent(widget* pw);
+
+    window* underlying_window() const;
+
+    virtual const sizef& size() const = 0;
+    virtual void size(const sizef& sz) = 0;
+
+    const brush* background() const;
+    void background(const brush* br);
 
     event<void (bool& succeeded), detail::onload_invoker> on_load;
+    event<void ()> on_unload;
     event<void (graphics& g)> on_paint;
-    event<void (const ::iwl::size& sz)> on_size;
+    event<void (const sizef& sz)> on_size;
+
+protected:
+    widget();
 
 private:
-    virtual void size_changed(const ::iwl::size& sz);
+    widget* m_ptr_parent = nullptr;
+    window* m_ptr_window = nullptr;
+
+    const brush* m_ptr_background = nullptr;
 };
 
 END_IWL()

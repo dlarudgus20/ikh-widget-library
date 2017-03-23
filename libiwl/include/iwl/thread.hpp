@@ -29,12 +29,15 @@
 
 BEGIN_IWL()
 
+class window;
+
 class thread
 {
 
 };
 
 int loop();
+int loop(window& main_wnd);
 
 END_IWL()
 

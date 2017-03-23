@@ -34,12 +34,12 @@
 
 namespace gdiutil
 {
-    inline Gdiplus::PointF gdi_pointf(const iwl::point& p)
+    inline Gdiplus::PointF gdi_pointf(const iwl::pointf& p)
     {
         return Gdiplus::PointF { p.x, p.y };
     }
 
-    inline Gdiplus::RectF gdi_rectf(const iwl::rectangle& rt)
+    inline Gdiplus::RectF gdi_rectf(const iwl::rectanglef& rt)
     {
         return Gdiplus::RectF { rt.x, rt.y, rt.width, rt.height };
     }

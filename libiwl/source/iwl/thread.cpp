@@ -24,6 +24,7 @@
 
 #include "pch.h"
 #include "iwl/thread.hpp"
+#include "iwl/widget/window.hpp"
 
 #include <windows.h>
 
@@ -38,6 +39,12 @@ int loop()
         ::DispatchMessage(&msg);
     }
     return (int)msg.wParam;
+}
+
+int loop(window& main_wnd)
+{
+    main_wnd.on_unload.add([] { ::PostQuitMessage(0); });
+    return loop();
 }
 
 END_IWL()

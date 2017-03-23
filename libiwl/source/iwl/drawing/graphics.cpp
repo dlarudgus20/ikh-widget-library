@@ -25,7 +25,7 @@
 #include "pch.h"
 #include "iwl/drawing/graphics.hpp"
 #include "iwl/widget/widget.hpp"
-#include "iwl/widget/form.hpp"
+#include "iwl/widget/window.hpp"
 
 #include "gdiutil.h"
 
@@ -33,7 +33,14 @@ BEGIN_IWL()
 
 graphics graphics::from_widget(widget& wd)
 {
-    return wd.parent_form().bedrock().create_graphics();
+    auto ptr_wnd = wd.underlying_window();
+    if (!ptr_wnd)
+        throw std::logic_error("widget cannot create graphics without an underlying window");
+
+    HWND hWnd = reinterpret_cast<HWND>(ptr_wnd->native_handle());
+    graphics ret { reinterpret_cast<native_graphics_handle>(new Gdiplus::Graphics { hWnd }) };
+
+    return ret;
 }
 
 graphics::graphics(native_graphics_handle handle)
@@ -44,6 +51,25 @@ graphics::graphics(native_graphics_handle handle)
 graphics::~graphics()
 {
     destroy();
+}
+
+void graphics::check_gdi_startup()
+{
+    struct gdi_startup_t
+    {
+        ULONG_PTR gpToken;
+        Gdiplus::GdiplusStartupInput gsi;
+        gdi_startup_t()
+        {
+            if (Gdiplus::GdiplusStartup(&gpToken, &gsi, nullptr) != Gdiplus::Ok)
+                throw iwl::graphics_creation_error("cannot initialize gdi+");
+        }
+        ~gdi_startup_t()
+        {
+            Gdiplus::GdiplusShutdown(gpToken);
+        }
+    };
+    static gdi_startup_t gdi_startup;
 }
 
 void graphics::destroy()
@@ -71,7 +97,7 @@ void graphics::swap(graphics& other) noexcept
     swap(m_handle, other.m_handle);
 }
 
-void graphics::fill_rectangle(const rectangle& rt, const brush& b)
+void graphics::fill_rectangle(const rectanglef& rt, const brush& b)
 {
     auto pg = reinterpret_cast<Gdiplus::Graphics*>(m_handle);
     auto pb = reinterpret_cast<Gdiplus::Brush*>(b.native_handle());

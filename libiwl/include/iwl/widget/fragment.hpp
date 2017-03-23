@@ -22,61 +22,28 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "pch.h"
-#include "iwl/bedrock/draw_context.hpp"
-#include "iwl/bedrock/window.hpp"
+#ifndef IWL_WIDGET_FRAGMENT_HPP_
+#define IWL_WIDGET_FRAGMENT_HPP_
 
-#include "gdiutil.h"
+#include "../defines.hpp"
+#include "widget.hpp"
 
-namespace
-{
-    using namespace iwl::bedrock;
-
-    struct context_t
-    {
-        ULONG_PTR gpToken;
-        Gdiplus::GdiplusStartupInput gsi;
-        context_t()
-        {
-            if (Gdiplus::GdiplusStartup(&gpToken, &gsi, nullptr) != Gdiplus::Ok)
-                throw draw_context_creation_error("cannot initialize gdi+");
-        }
-        ~context_t()
-        {
-            Gdiplus::GdiplusShutdown(gpToken);
-        }
-    };
-    std::weak_ptr<context_t> s_ptr_context;
-}
+#include "../event.hpp"
 
 BEGIN_IWL()
 
-namespace bedrock
+class brush;
+
+struct fragment_style
 {
-    draw_context::~draw_context()
-    {
-        if (m_ptr_wnd)
-            deinitialize();
-    }
+};
 
-    void draw_context::initialize(window& wnd)
-    {
-        m_ptr_wnd = &wnd;
-
-        auto pc = s_ptr_context.lock();
-        if (!pc)
-        {
-            pc = std::make_shared<context_t>();
-            s_ptr_context = pc;
-        }
-        m_ptr_context = std::move(pc);
-    }
-
-    void draw_context::deinitialize()
-    {
-        m_ptr_wnd = nullptr;
-        m_ptr_context.reset();
-    }
-}
+class fragment : public widget
+{
+public:
+    explicit fragment(const fragment_style& style);
+};
 
 END_IWL()
+
+#endif // IWL_WIDGET_FRAGMENT_HPP_

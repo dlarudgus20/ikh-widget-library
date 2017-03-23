@@ -29,43 +29,43 @@
 
 BEGIN_IWL()
 
-struct point
+struct pointf
 {
     float x, y;
 };
-inline bool operator ==(const point& lhs, const point& rhs)
+inline bool operator ==(const pointf& lhs, const pointf& rhs)
 {
     return (lhs.x == rhs.x && lhs.y == rhs.y);
 }
-inline bool operator !=(const point& lhs, const point& rhs)
+inline bool operator !=(const pointf& lhs, const pointf& rhs)
 {
     return !(lhs == rhs);
 }
 
-struct size
+struct sizef
 {
     float width, height;
 };
-inline bool operator ==(const size& lhs, const size& rhs)
+inline bool operator ==(const sizef& lhs, const sizef& rhs)
 {
     return (lhs.width == rhs.width && lhs.height == rhs.height);
 }
-inline bool operator !=(const size& lhs, const size& rhs)
+inline bool operator !=(const sizef& lhs, const sizef& rhs)
 {
     return !(lhs == rhs);
 }
 
-struct rectangle
+struct rectanglef
 {
     float x, y;
     float width, height;
 };
-inline bool operator ==(const rectangle& lhs, const rectangle& rhs)
+inline bool operator ==(const rectanglef& lhs, const rectanglef& rhs)
 {
     return (lhs.x == rhs.x && lhs.y == rhs.y
         && lhs.width == rhs.width && lhs.height == rhs.height);
 }
-inline bool operator !=(const rectangle& lhs, const rectangle& rhs)
+inline bool operator !=(const rectanglef& lhs, const rectanglef& rhs)
 {
     return !(lhs == rhs);
 }

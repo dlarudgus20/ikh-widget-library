@@ -47,7 +47,7 @@ struct color
         return from_argb(0xff000000 | rgb);
     }
 
-    std::uint_fast32_t argb() const
+    constexpr std::uint_fast32_t argb() const
     {
         return (static_cast<uint_fast32_t>(a * 255) << 24)
             | (static_cast<uint_fast32_t>(r * 255) << 16)

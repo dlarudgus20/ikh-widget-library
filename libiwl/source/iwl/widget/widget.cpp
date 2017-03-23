@@ -27,8 +27,7 @@
 
 BEGIN_IWL()
 
-widget::widget(form& frm)
-    : m_frm { frm }
+widget::widget()
 {
 }
 
@@ -36,23 +35,33 @@ widget::~widget()
 {
 }
 
-form& widget::parent_form() const
+widget* widget::parent() const
 {
-    return m_frm;
+    return m_ptr_parent;
 }
 
-const ::iwl::size& widget::size() const
+void widget::parent(widget* pw)
 {
-    return m_size;
+    m_ptr_parent = pw;
+    if (pw)
+        m_ptr_window = pw->underlying_window();
+    else
+        m_ptr_window = nullptr;
 }
 
-void widget::size(const ::iwl::size& sz)
+window* widget::underlying_window() const
 {
-    m_size = sz;
-    size_changed(m_size);
-    on_size.emit(m_size);
+    return m_ptr_window;
 }
 
-void widget::size_changed(const ::iwl::size& sz) { }
+const brush* widget::background() const
+{
+    return m_ptr_background;
+}
+
+void widget::background(const brush* br)
+{
+    m_ptr_background = br;
+}
 
 END_IWL()

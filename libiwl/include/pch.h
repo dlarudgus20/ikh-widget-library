@@ -40,6 +40,5 @@
 #include <cassert>
 
 #include <boost/noncopyable.hpp>
-#include <boost/variant.hpp>
 
 #endif // PCH_H_

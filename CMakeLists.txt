@@ -25,5 +25,14 @@
 project(ikh-widget-library)
 cmake_minimum_required(VERSION 2.8.12)
 
+string(REPLACE "\\" "/" ENV_BOOST_INSTALL $ENV{BOOST_INSTALL})
+set(BOOST_ROOT ${ENV_BOOST_INSTALL})
+set(BOOST_LIBRARYDIR ${BOOST_ROOT}/stage-msvc-150-32/lib)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME ON)
+
+add_definitions(-DBOOST_ALL_NO_LIB)
+
 add_subdirectory(libiwl)
 add_subdirectory(demo)

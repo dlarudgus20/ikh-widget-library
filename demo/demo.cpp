@@ -22,19 +22,21 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iwl/widget/form.hpp>
+#include <iwl/widget/window.hpp>
 #include <iwl/drawing/drawing.hpp>
+#include <iwl/drawing/brush.hpp>
 #include <iwl/thread.hpp>
 
 int main()
 {
-    iwl::form frm;
+    iwl::window wnd;
+    wnd.background(&iwl::brushes::beige());
 
-    iwl::drawing d { frm };
+    iwl::drawing d { wnd };
     d.on_draw.add([](iwl::graphics& g) {
-        std::puts("drawing asdf");
+        std::puts("drawing");
     });
 
-    frm.show();
-    iwl::loop();
+    wnd.show();
+    iwl::loop(wnd);
 }

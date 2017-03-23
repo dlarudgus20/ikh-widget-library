@@ -22,61 +22,15 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IWL_WIDGET_FORM_HPP_
-#define IWL_WIDGET_FORM_HPP_
-
-#include "../defines.hpp"
-#include "widget.hpp"
-
-#include "../bedrock/window.hpp"
-#include "../event.hpp"
+#include "pch.h"
+#include "iwl/widget/fragment.hpp"
+#include "iwl/drawing/graphics.hpp"
+#include "iwl/drawing/brush.hpp"
 
 BEGIN_IWL()
 
-class brush;
-
-namespace detail
+fragment::fragment(const fragment_style& style /* = { } */)
 {
-    struct native_window_handle_impl { };
 }
-using native_window_handle = detail::native_window_handle_impl*;
-
-class form_creation_error : public std::runtime_error
-{
-public:
-    explicit form_creation_error(const std::string& msg)
-        : std::runtime_error { msg } { }
-};
-
-struct form_style
-{
-};
-
-class form : public widget
-{
-private:
-    bedrock::window m_wnd;
-
-    const brush* m_ptr_background;
-
-public:
-    explicit form(const form_style& style = { });
-    void show();
-
-    bedrock::window& bedrock();
-    const bedrock::window& bedrock() const;
-
-    void background(const brush& b);
-    const brush& background() const;
-
-private:
-    bedrock::wndproc_result wndproc_handler(bedrock::load_args& args);
-    bedrock::wndproc_result wndproc_handler(bedrock::paint_args& args);
-    bedrock::wndproc_result wndproc_handler(bedrock::size_args& args);
-
-    virtual void size_changed(const ::iwl::size& sz) override;
-};
 
 END_IWL()
-
-#endif // IWL_WIDGET_FORM_HPP_

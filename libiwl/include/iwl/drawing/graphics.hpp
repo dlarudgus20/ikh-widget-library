@@ -32,10 +32,7 @@
 BEGIN_IWL()
 
 class widget;
-namespace bedrock
-{
-    class window;
-}
+class window;
 
 namespace detail
 {
@@ -43,16 +40,16 @@ namespace detail
 }
 using native_graphics_handle = detail::native_graphics_handle_impl*;
 
+class graphics_creation_error : public std::runtime_error
+{
+public:
+    explicit graphics_creation_error(const std::string& msg)
+        : std::runtime_error { msg } { }
+};
+
 class graphics : private boost::noncopyable
 {
-    friend bedrock::window;
-
-private:
-    native_graphics_handle m_handle;
-
-    void destroy();
-
-    explicit graphics(native_graphics_handle handle);
+    friend window;
 
 public:
     ~graphics();
@@ -63,7 +60,15 @@ public:
     graphics& operator =(graphics&& other) noexcept;
     void swap(graphics& other) noexcept;
 
-    void fill_rectangle(const rectangle& rt, const brush& b);
+    void fill_rectangle(const rectanglef& rt, const brush& b);
+
+private:
+    static void check_gdi_startup();
+
+    explicit graphics(native_graphics_handle handle);
+    void destroy();
+
+    native_graphics_handle m_handle;
 };
 
 inline void swap(graphics& a, graphics& b) noexcept

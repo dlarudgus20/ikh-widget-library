@@ -25,22 +25,24 @@
 project(libiwl)
 cmake_minimum_required(VERSION 2.8.12)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+find_package(Boost 1.60.0 REQUIRED COMPONENTS)
 
 add_definitions(-DUNICODE)
 
 add_library(libiwl
-    source/iwl/bedrock/draw_context.cpp
-    source/iwl/bedrock/window.cpp
     source/iwl/drawing/brush.cpp
     source/iwl/drawing/drawing.cpp
     source/iwl/drawing/graphics.cpp
-    source/iwl/widget/form.cpp
+    source/iwl/widget/fragment.cpp
+    source/iwl/widget/window.cpp
     source/iwl/widget/widget.cpp
     source/iwl/thread.cpp
     source/pch.cpp
 )
 
-target_include_directories(libiwl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(libiwl PUBLIC gdiplus)
+target_include_directories(libiwl PUBLIC
+    ${Boost_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(libiwl PUBLIC
+    ${Boost_LIBRARIES}
+    gdiplus)

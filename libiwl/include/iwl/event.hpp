@@ -359,6 +359,8 @@ public:
                 }
             }
             while (node != m_lst);
+
+            m_lst->emiting = false;
         }
 
         return invoker.result();
